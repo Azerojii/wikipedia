@@ -29,6 +29,18 @@ Your Wikipedia site can now create/edit/delete articles on production through Gi
 | `GITHUB_OWNER` | Your GitHub username | Your profile (e.g., `dalil`) |
 | `GITHUB_REPO` | Your repository name | Repo name (e.g., `wikipedia`) |
 | `GITHUB_BRANCH` | `main` | Usually `main` or `master` |
+| `VERCEL_DEPLOY_HOOK_URL` | Deploy hook URL | See Step 2a below |
+
+### Step 2a: Create Vercel Deploy Hook
+
+1. In your Vercel project, go to **Settings** → **Git** 
+2. Scroll to **Deploy Hooks** section
+3. Click **Create Hook**
+4. Name it: `Admin Panel Auto Deploy`
+5. Branch: `main` (or your default branch)
+6. Click **Create Hook**
+7. **Copy the URL** (looks like: `https://api.vercel.com/v1/integrations/deploy/...`)
+8. Add this as `VERCEL_DEPLOY_HOOK_URL` environment variable
 
 ### Example:
 ```
@@ -36,6 +48,7 @@ GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxx
 GITHUB_OWNER=dalil
 GITHUB_REPO=wikipedia
 GITHUB_BRANCH=main
+VERCEL_DEPLOY_HOOK_URL=https://api.vercel.com/v1/integrations/deploy/prj_xxxxx/xxxxxxx
 ```
 
 **Important:** For each variable, select **Production, Preview, Development** (all environments)
@@ -54,8 +67,8 @@ GITHUB_BRANCH=main
 3. Try creating a new article
 4. It will:
    - Commit the file to GitHub
-   - Trigger automatic Vercel redeployment
-   - Article appears live in ~1-2 minutes
+   - Trigger automatic Vercel redeployment (via Deploy Hook)
+   - Article appears live in ~30-60 seconds (much faster than before!)
 
 ## How It Works
 

@@ -12,8 +12,27 @@ const GITHUB_OWNER = process.env.GITHUB_OWNER || ''
 const GITHUB_REPO = process.env.GITHUB_REPO || ''
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main'
 
+// Vercel Deploy Hook
+const VERCEL_DEPLOY_HOOK = process.env.VERCEL_DEPLOY_HOOK_URL || ''
+
 // Check if we're running on Vercel (production) or local
 const isProduction = process.env.VERCEL === '1'
+
+/**
+ * Trigger Vercel redeployment
+ */
+async function triggerVercelDeploy(): Promise<void> {
+  if (!VERCEL_DEPLOY_HOOK || !isProduction) {
+    return
+  }
+
+  try {
+    await fetch(VERCEL_DEPLOY_HOOK, { method: 'POST' })
+    console.log('Vercel deployment triggered')
+  } catch (error) {
+    console.error('Failed to trigger Vercel deployment:', error)
+  }
+}
 
 /**
  * Create or update a file in GitHub
@@ -74,6 +93,9 @@ export async function createOrUpdateGitHubFile(
       ...(sha && { sha }),
     })
 
+    // Trigger Vercel redeployment
+    await triggerVercelDeploy()
+
     return { success: true }
   } catch (error: any) {
     console.error('GitHub API error:', error)
@@ -130,6 +152,9 @@ export async function deleteGitHubFile(
       sha: data.sha,
       branch: GITHUB_BRANCH,
     })
+
+    // Trigger Vercel redeployment
+    await triggerVercelDeploy()
 
     return { success: true }
   } catch (error: any) {
