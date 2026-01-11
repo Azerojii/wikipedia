@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
 import { getWikiArticle } from '@/lib/wiki'
-
-const contentDirectory = path.join(process.cwd(), 'content/wiki')
+import { createOrUpdateGitHubFile, deleteGitHubFile, fileExistsOnGitHub } from '@/lib/github'
 
 export async function GET(
   request: Request,
@@ -50,10 +47,11 @@ export async function PUT(
 
     const { slug } = await params
     const decodedSlug = decodeURIComponent(slug)
-    const filePath = path.join(contentDirectory, `${decodedSlug}.md`)
+    const filePath = `content/wiki/${decodedSlug}.md`
 
     // Check if file exists
-    if (!fs.existsSync(filePath)) {
+    const exists = await fileExistsOnGitHub(filePath)
+    if (!exists) {
       return NextResponse.json(
         { error: 'Article not found' },
         { status: 404 }
@@ -73,8 +71,19 @@ export async function PUT(
     // Create markdown file with frontmatter
     const fileContent = matter.stringify(content, frontmatter)
 
-    // Write file
-    fs.writeFileSync(filePath, fileContent, 'utf8')
+    // Update file via GitHub API or local filesystem
+    const result = await createOrUpdateGitHubFile(
+      filePath,
+      fileContent,
+      `Update article: ${title}`
+    )
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to update article' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ 
       success: true, 
@@ -97,18 +106,29 @@ export async function DELETE(
   try {
     const { slug } = await params
     const decodedSlug = decodeURIComponent(slug)
-    const filePath = path.join(contentDirectory, `${decodedSlug}.md`)
+    const filePath = `content/wiki/${decodedSlug}.md`
 
     // Check if file exists
-    if (!fs.existsSync(filePath)) {
+    const exists = await fileExistsOnGitHub(filePath)
+    if (!exists) {
       return NextResponse.json(
         { error: 'Article not found' },
         { status: 404 }
       )
     }
 
-    // Delete file
-    fs.unlinkSync(filePath)
+    // Delete file via GitHub API or local filesystem
+    const result = await deleteGitHubFile(
+      filePath,
+      `Delete article: ${decodedSlug}`
+    )
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to delete article' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ 
       success: true,

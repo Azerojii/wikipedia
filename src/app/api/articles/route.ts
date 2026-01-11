@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
-
-const contentDirectory = path.join(process.cwd(), 'content/wiki')
+import { createOrUpdateGitHubFile, fileExistsOnGitHub } from '@/lib/github'
 
 export async function POST(request: Request) {
   try {
@@ -20,10 +17,11 @@ export async function POST(request: Request) {
 
     // Create slug from title (trim and replace spaces with underscores)
     const slug = title.trim().replace(/\s+/g, '_')
-    const filePath = path.join(contentDirectory, `${slug}.md`)
+    const filePath = `content/wiki/${slug}.md`
 
     // Check if file already exists
-    if (fs.existsSync(filePath)) {
+    const exists = await fileExistsOnGitHub(filePath)
+    if (exists) {
       return NextResponse.json(
         { error: 'Article already exists' },
         { status: 409 }
@@ -43,13 +41,19 @@ export async function POST(request: Request) {
     // Create markdown file with frontmatter
     const fileContent = matter.stringify(content, frontmatter)
 
-    // Ensure directory exists
-    if (!fs.existsSync(contentDirectory)) {
-      fs.mkdirSync(contentDirectory, { recursive: true })
-    }
+    // Create file via GitHub API or local filesystem
+    const result = await createOrUpdateGitHubFile(
+      filePath,
+      fileContent,
+      `Create article: ${title}`
+    )
 
-    // Write file
-    fs.writeFileSync(filePath, fileContent, 'utf8')
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to create article' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ 
       success: true, 
