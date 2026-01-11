@@ -7,6 +7,7 @@ import TableOfContents from '@/components/TableOfContents'
 import Infobox from '@/components/Infobox'
 import EditButton from '@/components/EditButton'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
+import YouTubeVideos from '@/components/YouTubeVideos'
 
 // Dynamic rendering - always fetch fresh data
 export const dynamic = 'force-dynamic'
@@ -74,6 +75,11 @@ export default async function WikiPage({ params }: { params: { slug: string } })
             <div className="flex-1">
               {/* Article Content */}
               <MarkdownRenderer content={article.content} />
+
+              {/* YouTube Videos Section */}
+              {article.youtubeVideos && article.youtubeVideos.length > 0 && (
+                <YouTubeVideos videos={article.youtubeVideos} />
+              )}
 
               {/* Footer */}
               <div className="mt-12 pt-6 border-t border-gray-300">

@@ -37,7 +37,7 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { title, description, category, content, infobox } = body
+    const { title, description, category, content, infobox, youtubeVideos } = body
 
     // Validate required fields
     if (!title || !content) {
@@ -65,6 +65,7 @@ export async function PUT(
       lastUpdated: new Date().toISOString().split('T')[0],
       category: category || 'General',
       ...(infobox && { infobox }),
+      ...(youtubeVideos && youtubeVideos.length > 0 && { youtubeVideos }),
     }
 
     // Create markdown file with frontmatter

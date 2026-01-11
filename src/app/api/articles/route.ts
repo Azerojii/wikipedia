@@ -8,7 +8,7 @@ const contentDirectory = path.join(process.cwd(), 'content/wiki')
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { title, description, category, content, infobox } = body
+    const { title, description, category, content, infobox, youtubeVideos } = body
 
     // Validate required fields
     if (!title || !content) {
@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       lastUpdated: new Date().toISOString().split('T')[0],
       category: category || 'General',
       ...(infobox && { infobox }),
+      ...(youtubeVideos && youtubeVideos.length > 0 && { youtubeVideos }),
     }
 
     // Create markdown file with frontmatter

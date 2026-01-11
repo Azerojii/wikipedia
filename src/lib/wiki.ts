@@ -13,6 +13,7 @@ export interface WikiArticle {
   infobox?: {
     [key: string]: string
   }
+  youtubeVideos?: string[]
   content: string
   rawContent: string
 }
@@ -120,6 +121,7 @@ export async function getWikiArticle(slug: string): Promise<WikiArticle | null> 
       infobox: data.infobox ? Object.fromEntries(
         Object.entries(data.infobox).map(([key, value]) => [key, String(value)])
       ) : undefined,
+      youtubeVideos: data.youtubeVideos && Array.isArray(data.youtubeVideos) ? data.youtubeVideos : undefined,
       content: contentWithLinks,
       rawContent: content,
     }

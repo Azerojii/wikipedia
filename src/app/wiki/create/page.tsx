@@ -16,6 +16,7 @@ export default function CreateArticlePage() {
   const [category, setCategory] = useState('General')
   const [content, setContent] = useState('')
   const [infoboxFields, setInfoboxFields] = useState<{ key: string; value: string }[]>([])
+  const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -33,6 +34,20 @@ export default function CreateArticlePage() {
     setInfoboxFields(updated)
   }
 
+  const addYoutubeVideo = () => {
+    setYoutubeVideos([...youtubeVideos, ''])
+  }
+
+  const removeYoutubeVideo = (index: number) => {
+    setYoutubeVideos(youtubeVideos.filter((_, i) => i !== index))
+  }
+
+  const updateYoutubeVideo = (index: number, value: string) => {
+    const updated = [...youtubeVideos]
+    updated[index] = value
+    setYoutubeVideos(updated)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -47,6 +62,9 @@ export default function CreateArticlePage() {
         return acc
       }, {} as { [key: string]: string })
 
+      // Filter out empty YouTube links
+      const validYoutubeVideos = youtubeVideos.filter(video => video.trim() !== '')
+
       const response = await fetch('/api/articles', {
         method: 'POST',
         headers: {
@@ -58,6 +76,7 @@ export default function CreateArticlePage() {
           category,
           content,
           infobox: Object.keys(infobox).length > 0 ? infobox : undefined,
+          youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
       })
 
@@ -182,6 +201,44 @@ export default function CreateArticlePage() {
                 >
                   <Plus size={16} />
                   Ajouter un champ Infobox
+                </button>
+              </div>
+            </div>
+
+            {/* YouTube Videos */}
+            <div>
+              <label className="block text-sm font-bold mb-2">
+                Vidéos YouTube (Optionnel)
+              </label>
+              <div className="text-xs text-gray-600 mb-2">
+                Ajoutez des liens YouTube à intégrer dans l'article (ex: https://www.youtube.com/watch?v=VIDEO_ID)
+              </div>
+              <div className="space-y-2">
+                {youtubeVideos.map((video, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="url"
+                      value={video}
+                      onChange={(e) => updateYoutubeVideo(index, e.target.value)}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeYoutubeVideo(index)}
+                      className="px-3 py-2 bg-destructive text-white rounded hover:opacity-90 text-sm"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addYoutubeVideo}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+                >
+                  <Plus size={16} />
+                  Ajouter une vidéo YouTube
                 </button>
               </div>
             </div>
