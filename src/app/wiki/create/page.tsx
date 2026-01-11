@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
 import { Loader2, Plus } from 'lucide-react'
 
-export default function CreateArticlePage() {
+function CreateArticleForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const suggestedTitle = searchParams.get('title') || ''
@@ -298,5 +298,20 @@ Votre contenu ici...
         </main>
       </div>
     </div>
+  )
+}
+
+export default function CreateArticlePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white">
+        <WikiHeader />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="animate-spin text-primary" size={32} />
+        </div>
+      </div>
+    }>
+      <CreateArticleForm />
+    </Suspense>
   )
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -11,7 +11,7 @@ const contentDirectory = path.join(process.cwd(), 'content/wiki')
 // Get single submission
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -19,7 +19,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const filePath = path.join(pendingDirectory, `${params.id}.md`)
+    const { id } = await params
+    const filePath = path.join(pendingDirectory, `${id}.md`)
     
     if (!fs.existsSync(filePath)) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
@@ -29,7 +30,7 @@ export async function GET(
     const { data, content } = matter(fileContents)
 
     return NextResponse.json({
-      id: params.id,
+      id,
       ...data,
       content,
     })
@@ -45,7 +46,7 @@ export async function GET(
 // Approve submission
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -56,7 +57,8 @@ export async function PUT(
     const body = await request.json()
     const { action, title, description, category, content, infobox } = body
 
-    const pendingPath = path.join(pendingDirectory, `${params.id}.md`)
+    const { id } = await params
+    const pendingPath = path.join(pendingDirectory, `${id}.md`)
     
     if (!fs.existsSync(pendingPath)) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 })

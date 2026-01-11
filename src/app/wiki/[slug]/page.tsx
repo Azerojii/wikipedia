@@ -20,8 +20,9 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const article = await getWikiArticle(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const article = await getWikiArticle(slug)
   
   if (!article) {
     return {
@@ -35,8 +36,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function WikiPage({ params }: { params: { slug: string } }) {
-  const article = await getWikiArticle(params.slug)
+export default async function WikiPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const article = await getWikiArticle(slug)
 
   if (!article) {
     notFound()
@@ -64,7 +66,7 @@ export default async function WikiPage({ params }: { params: { slug: string } })
           </div>
 
           {/* Edit Button for Admin */}
-          <EditButton slug={params.slug} />
+          <EditButton slug={slug} />
 
           {/* Article Title */}
           <h1 className="text-4xl font-serif font-bold border-b border-gray-300 pb-2 mb-4">

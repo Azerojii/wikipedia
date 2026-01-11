@@ -8,10 +8,11 @@ const contentDirectory = path.join(process.cwd(), 'content/wiki')
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const decodedSlug = decodeURIComponent(params.slug)
+    const { slug } = await params
+    const decodedSlug = decodeURIComponent(slug)
     const article = await getWikiArticle(decodedSlug)
     
     if (!article) {
@@ -33,7 +34,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const body = await request.json()
@@ -47,7 +48,8 @@ export async function PUT(
       )
     }
 
-    const decodedSlug = decodeURIComponent(params.slug)
+    const { slug } = await params
+    const decodedSlug = decodeURIComponent(slug)
     const filePath = path.join(contentDirectory, `${decodedSlug}.md`)
 
     // Check if file exists
@@ -90,10 +92,11 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const decodedSlug = decodeURIComponent(params.slug)
+    const { slug } = await params
+    const decodedSlug = decodeURIComponent(slug)
     const filePath = path.join(contentDirectory, `${decodedSlug}.md`)
 
     // Check if file exists

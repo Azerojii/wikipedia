@@ -26,11 +26,11 @@ export default function SearchBar() {
     fetch('/api/search')
       .then((res) => res.json())
       .then((data) => {
-        const articleData = data.results || data
+        const articleData: Article[] = data.results || data
         setArticles(articleData)
         
         // Initialize Fuse.js
-        const fuseInstance = new Fuse(articleData, {
+        const fuseInstance = new Fuse<Article>(articleData, {
           keys: ['title', 'description', 'category'],
           threshold: 0.3,
           includeScore: true,
