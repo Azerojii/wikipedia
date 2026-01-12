@@ -23,13 +23,19 @@ export default function WikiHeader() {
             </Link>
             
             <nav className="hidden md:flex gap-6 text-sm">
-              <Link href="/" className="hover:text-primary">
+              <Link href="/" className="hover:text-primary transition-colors">
                 Page d'accueil
               </Link>
-              <Link href="/wiki/Grande_Mosquée_de_Paris" className="hover:text-primary">
+              <Link href="/wiki/Grande_Mosquée_de_Paris" className="hover:text-primary transition-colors">
                 Contenu
               </Link>
-              <button className="hover:text-primary">Article aléatoire</button>
+              <button className="hover:text-primary transition-colors">Article aléatoire</button>
+              <Link href="/submit" className="hover:text-secondary transition-colors font-medium">
+                Soumettre
+              </Link>
+              <Link href="/admin" className="hover:text-primary transition-colors font-medium">
+                Admin
+              </Link>
             </nav>
           </div>
 

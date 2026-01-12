@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Search } from 'lucide-react'
 import SearchBar from '@/components/SearchBar'
+import WikiHeader from '@/components/WikiHeader'
 import { getAllWikiMetadata } from '@/lib/wiki'
 
 // Force dynamic rendering to always show latest articles
@@ -13,6 +14,7 @@ export default function Home() {
   const featuredArticles = articles.slice(0, 6) // Get first 6 articles
   return (
     <main className="min-h-screen bg-white">
+      <WikiHeader />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-4">
