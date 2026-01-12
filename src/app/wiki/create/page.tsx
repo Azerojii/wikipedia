@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
+import ImageUploader from '@/components/ImageUploader'
 import { Loader2, Plus } from 'lucide-react'
 
 function CreateArticleForm() {
@@ -19,6 +20,7 @@ function CreateArticleForm() {
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const addInfoboxField = () => {
     setInfoboxFields([...infoboxFields, { key: '', value: '' }])
@@ -46,6 +48,24 @@ function CreateArticleForm() {
     const updated = [...youtubeVideos]
     updated[index] = value
     setYoutubeVideos(updated)
+  }
+
+  const handleImageInsert = (markdown: string) => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      const newContent = content.substring(0, start) + markdown + content.substring(end)
+      setContent(newContent)
+      
+      // Set cursor position after inserted markdown
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start + markdown.length, start + markdown.length)
+      }, 0)
+    } else {
+      setContent(content + '\n' + markdown)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -251,7 +271,14 @@ function CreateArticleForm() {
               <div className="text-xs text-gray-600 mb-2">
                 Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
               </div>
+              
+              {/* Image Uploader */}
+              <div className="mb-4">
+                <ImageUploader onImageInsert={handleImageInsert} />
+              </div>
+              
               <textarea
+                ref={textareaRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required

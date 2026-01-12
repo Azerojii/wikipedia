@@ -2,14 +2,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, Plus, Settings } from 'lucide-react'
-import { useState } from 'react'
 import SearchBar from './SearchBar'
+import UserMenu from './UserMenu'
 
 export default function WikiHeader() {
-  const [showSearch, setShowSearch] = useState(false)
-  const [showAdminMenu, setShowAdminMenu] = useState(false)
-
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-300 shadow-sm">
       <div className="max-w-[1400px] mx-auto px-6 py-3">
@@ -39,23 +35,7 @@ export default function WikiHeader() {
 
           <div className="flex items-center gap-4">
             <SearchBar />
-            <Link
-              href="/submit"
-              className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded hover:opacity-90 text-sm font-medium"
-            >
-              <Plus size={16} />
-              Soumettre
-            </Link>
-            <div className="relative">
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded hover:opacity-90 text-sm font-medium"
-                title="Administration"
-              >
-                <Settings size={16} />
-                <span className="hidden md:inline">Admin</span>
-              </Link>
-            </div>
+            <UserMenu />
           </div>
         </div>
       </div>

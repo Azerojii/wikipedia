@@ -26,7 +26,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       prose-table:border-collapse prose-table:w-full
       prose-th:border prose-th:border-gray-300 prose-th:bg-gray-100 prose-th:px-3 prose-th:py-2
       prose-td:border prose-td:border-gray-300 prose-td:px-3 prose-td:py-2
-      prose-img:rounded-lg prose-img:shadow-md">
+      prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto prose-img:my-6 prose-img:max-w-full
+      prose-em:text-center prose-em:block prose-em:text-sm prose-em:text-gray-600 prose-em:mt-2">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeSanitize]}
