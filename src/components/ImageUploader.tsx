@@ -32,41 +32,48 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Check file size (limit to 2MB for base64)
-    if (file.size > 2 * 1024 * 1024) {
-      alert('L\'image est trop grande. Veuillez utiliser une image de moins de 2 Mo.')
+    // Check file size (limit to 4.5MB)
+    if (file.size > 4.5 * 1024 * 1024) {
+      alert('L\'image est trop grande. Veuillez utiliser une image de moins de 4.5 Mo.')
       return
     }
 
     setIsUploading(true)
 
     try {
-      // Convert image to base64 (works on Vercel and locally)
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string
-        const markdown = caption
-          ? `![${altText || file.name}](${base64})\n*${caption}*\n`
-          : `![${altText || file.name}](${base64})\n`
-        
-        onImageInsert(markdown)
-        setAltText('')
-        setCaption('')
-        setIsUploading(false)
-        
-        // Reset file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''
-        }
+      // Upload to Vercel Blob
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Upload failed')
       }
-      reader.onerror = () => {
-        alert('Échec du téléchargement de l\'image. Veuillez réessayer.')
-        setIsUploading(false)
+
+      const data = await response.json()
+      
+      // Insert markdown with the uploaded image URL
+      const markdown = caption
+        ? `![${altText || file.name}](${data.url})\n*${caption}*\n`
+        : `![${altText || file.name}](${data.url})\n`
+      
+      onImageInsert(markdown)
+      setAltText('')
+      setCaption('')
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
       }
-      reader.readAsDataURL(file)
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Échec du téléchargement de l\'image. Veuillez réessayer.')
+      alert(error instanceof Error ? error.message : 'Échec du téléchargement de l\'image. Veuillez réessayer.')
+    } finally {
       setIsUploading(false)
     }
   }
@@ -158,7 +165,7 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
         )}
 
         <div className="text-xs text-gray-500 mt-2">
-          💡 Astuce : Les images sont encodées en base64 et stockées dans le markdown (max 2 Mo)
+          💡 Astuce : Les images sont stockées sur Vercel Blob (max 4.5 Mo)
         </div>
       </div>
     </div>

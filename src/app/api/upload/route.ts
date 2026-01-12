@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
-import { existsSync } from 'fs'
+import { put } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,32 +13,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
+    // Check file size (limit to 4.5MB for Vercel Blob free tier)
+    if (file.size > 4.5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'File too large. Maximum size is 4.5MB' },
+        { status: 400 }
+      )
     }
 
-    // Generate unique filename
-    const timestamp = Date.now()
-    const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const filename = `${timestamp}-${sanitizedFilename}`
-    const filepath = path.join(uploadsDir, filename)
-
-    // Save file
-    await writeFile(filepath, buffer)
-
-    // Return the public URL
-    const publicUrl = `/uploads/${filename}`
+    // Upload to Vercel Blob
+    const blob = await put(file.name, file, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    })
 
     return NextResponse.json({ 
       success: true,
-      url: publicUrl,
-      filename: filename
+      url: blob.url,
+      filename: file.name
     })
   } catch (error) {
     console.error('Upload error:', error)
