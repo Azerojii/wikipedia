@@ -12,6 +12,7 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
   const [imageUrl, setImageUrl] = useState('')
   const [altText, setAltText] = useState('')
   const [caption, setCaption] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleUrlSubmit = () => {
@@ -31,18 +32,43 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Convert image to base64
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string
+    setIsUploading(true)
+
+    try {
+      // Upload to server
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const data = await response.json()
+      
+      // Insert markdown with the uploaded image URL
       const markdown = caption
-        ? `![${altText || file.name}](${base64})\n*${caption}*\n`
-        : `![${altText || file.name}](${base64})\n`
+        ? `![${altText || file.name}](${data.url})\n*${caption}*\n`
+        : `![${altText || file.name}](${data.url})\n`
+      
       onImageInsert(markdown)
       setAltText('')
       setCaption('')
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Échec du téléchargement de l\'image. Veuillez réessayer.')
+    } finally {
+      setIsUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   return (
@@ -57,10 +83,13 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+          disabled={isUploading}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Upload size={18} />
-          <span className="text-sm">Télécharger une image</span>
+          <span className="text-sm">
+            {isUploading ? 'Téléchargement...' : 'Télécharger une image'}
+          </span>
         </button>
         <input
           ref={fileInputRef}
