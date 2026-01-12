@@ -3,7 +3,7 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
-import rehypeSanitize from 'rehype-sanitize'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import Link from 'next/link'
 
 interface MarkdownRendererProps {
@@ -11,6 +11,22 @@ interface MarkdownRendererProps {
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+  // Allow data URIs (base64 images) in sanitization
+  const sanitizeSchema = {
+    ...defaultSchema,
+    attributes: {
+      ...defaultSchema.attributes,
+      img: [
+        ...(defaultSchema.attributes?.img || []),
+        ['src', 'alt', 'title', 'width', 'height']
+      ]
+    },
+    protocols: {
+      ...defaultSchema.protocols,
+      src: [...(defaultSchema.protocols?.src || []), 'data']
+    }
+  }
+
   return (
     <div className="prose prose-lg max-w-none
       prose-headings:font-serif prose-headings:border-b prose-headings:border-gray-200 prose-headings:pb-1 prose-headings:mb-3
@@ -30,7 +46,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       prose-em:text-center prose-em:block prose-em:text-sm prose-em:text-gray-600 prose-em:mt-2">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
         components={{
         a: ({ node, href, children, ...props }) => {
           // Handle WikiLinks that have been converted to /wiki/... format
