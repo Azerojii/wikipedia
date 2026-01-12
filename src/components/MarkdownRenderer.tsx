@@ -3,30 +3,14 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface MarkdownRendererProps {
   content: string
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
-  // Allow data URIs (base64 images) in sanitization
-  const sanitizeSchema = {
-    ...defaultSchema,
-    attributes: {
-      ...defaultSchema.attributes,
-      img: [
-        ...(defaultSchema.attributes?.img || []),
-        ['src', 'alt', 'title', 'width', 'height']
-      ]
-    },
-    protocols: {
-      ...defaultSchema.protocols,
-      src: [...(defaultSchema.protocols?.src || []), 'data']
-    }
-  }
-
   return (
     <div className="prose prose-lg max-w-none
       prose-headings:font-serif prose-headings:border-b prose-headings:border-gray-200 prose-headings:pb-1 prose-headings:mb-3
@@ -46,8 +30,20 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       prose-em:text-center prose-em:block prose-em:text-sm prose-em:text-gray-600 prose-em:mt-2">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+        rehypePlugins={[rehypeRaw]}
         components={{
+        img: ({ node, src, alt, ...props }) => {
+          if (!src) return null
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img 
+              src={src} 
+              alt={alt || 'Image'} 
+              className="rounded-lg shadow-md mx-auto my-6 max-w-full"
+              {...props}
+            />
+          )
+        },
         a: ({ node, href, children, ...props }) => {
           // Handle WikiLinks that have been converted to /wiki/... format
           if (href?.startsWith('/wiki/')) {
