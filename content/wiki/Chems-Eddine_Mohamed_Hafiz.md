@@ -3,6 +3,8 @@ title: Chems-Eddine Mohamed Hafiz
 description: ''
 lastUpdated: '2026-01-13'
 category: General
+youtubeVideos:
+  - 'https://www.youtube.com/watch?v=OTLTwyCAxb4'
 ---
 ![Chems-eddine_Hafiz,_avocat.jpg](https://xwc7adqrxg2uptgw.public.blob.vercel-storage.com/Chems-eddine_Hafiz%2C_avocat.jpg)
 Chems-Eddine Mohamed Hafiz, né le 28 juin 1954 à Alger[1], est un avocat franco-algérien[2]. Il est recteur de la grande mosquée de Paris depuis le 11 janvier 2020 et membre de la Commission nationale consultative des droits de l'homme (CNCDH)[3].
