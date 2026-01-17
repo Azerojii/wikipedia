@@ -11,6 +11,15 @@
 }
 
 body {
-  font-family: Georgia, 'Times New Roman', serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: Georgia, 'Times New Roman', serif, 'Apple Color Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'EmojiOne Color';
   line-height: 1.6;
+}
+
+/* Emoji styling to ensure proper rendering */
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.1em;
+  display: inline;
 }
