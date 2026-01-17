@@ -100,8 +100,8 @@ export default function SubmitArticlePage() {
             <div className="text-sm text-blue-800">
               <p className="font-semibold mb-1">Soumission publique</p>
               <p>
-                Votre article sera examiné par un administrateur avant d'être publié sur MuslimWiki.
-                Vous recevrez une notification par email si vous en fournissez un.
+                Votre article sera examiné par un administrateur avant d'être publié sur Musulmans Français.
+                Vous recevrez une notification par email.
               </p>
             </div>
           </div>
@@ -115,31 +115,33 @@ export default function SubmitArticlePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Submitter Info */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-              <h3 className="font-bold text-lg">Vos informations (optionnel)</h3>
+              <h3 className="font-bold text-lg">Vos informations</h3>
               
               <div>
                 <label className="block text-sm font-bold mb-2">
-                  Votre nom
+                  Votre nom <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={submitterName}
                   onChange={(e) => setSubmitterName(e.target.value)}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Votre nom (optionnel)"
+                  placeholder="Votre nom"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-bold mb-2">
-                  Votre email
+                  Votre email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   value={submitterEmail}
                   onChange={(e) => setSubmitterEmail(e.target.value)}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="votre.email@example.com (optionnel)"
+                  placeholder="votre.email@example.com"
                 />
               </div>
             </div>
@@ -224,7 +226,7 @@ Votre contenu ici...
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !title || !content}
+                disabled={isSubmitting || !title || !content || !submitterName || !submitterEmail}
                 className="px-6 py-3 bg-primary text-white rounded hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
               >
                 {isSubmitting ? (

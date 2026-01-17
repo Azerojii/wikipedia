@@ -4,7 +4,7 @@ import AuthProvider from '@/components/AuthProvider'
 import EmojiProvider from '@/components/EmojiProvider'
 
 export const metadata: Metadata = {
-  title: 'MuslimWiki - Grande Mosquée de Paris',
+  title: 'Musulmans Français',
   description: 'L\'encyclopédie libre sur la Grande Mosquée de Paris et l\'islam en France',
 }
 

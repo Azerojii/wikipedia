@@ -17,7 +17,7 @@ export default function EditArticlePage() {
   const [category, setCategory] = useState('Histoire')
   const [content, setContent] = useState('')
   const [infoboxTitle, setInfoboxTitle] = useState('')
-  const [infoboxColor, setInfoboxColor] = useState('#8b7355')
+  const [infoboxColor, setInfoboxColor] = useState('#067782')
   const [infoboxImage, setInfoboxImage] = useState('')
   const [infoboxImageCaption, setInfoboxImageCaption] = useState('')
   const [infoboxSections, setInfoboxSections] = useState<Array<{

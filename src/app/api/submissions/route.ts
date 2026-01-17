@@ -49,21 +49,26 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { title, description, category, content, submitterName, submitterEmail } = body
 
-    if (!title || !content) {
+    if (!title || !content || !submitterName || !submitterEmail) {
       return NextResponse.json(
-        { error: 'Title and content are required' },
+        { error: 'Title, content, name, and email are required' },
         { status: 400 }
       )
     }
 
     // Ensure directory exists
-    if (!fs.existsSync(pendingDirectory)) {
-      fs.mkdirSync(pendingDirectory, { recursive: true })
+    try {
+      if (!fs.existsSync(pendingDirectory)) {
+        fs.mkdirSync(pendingDirectory, { recursive: true })
+      }
+    } catch (dirError) {
+      console.error('Error creating directory:', dirError)
+      // If directory creation fails, log but continue
     }
 
     // Create unique ID with timestamp
     const timestamp = Date.now()
-    const slug = title.trim().replace(/\s+/g, '_')
+    const slug = title.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
     const id = `${timestamp}_${slug}`
     const filePath = path.join(pendingDirectory, `${id}.md`)
 
@@ -73,14 +78,23 @@ export async function POST(request: Request) {
       description: description || '',
       category: category || 'Général',
       submittedAt: new Date().toISOString(),
-      submitterName: submitterName || 'Anonyme',
-      submitterEmail: submitterEmail || '',
+      submitterName,
+      submitterEmail,
       status: 'pending',
     }
 
     // Create markdown file with frontmatter
     const fileContent = matter.stringify(content, frontmatter)
-    fs.writeFileSync(filePath, fileContent, 'utf8')
+    
+    try {
+      fs.writeFileSync(filePath, fileContent, 'utf8')
+    } catch (writeError) {
+      console.error('Error writing file:', writeError)
+      return NextResponse.json(
+        { error: 'Failed to save submission. Please try again or contact an administrator.' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ 
       success: true, 
@@ -90,7 +104,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating submission:', error)
     return NextResponse.json(
-      { error: 'Failed to create submission' },
+      { error: `Failed to create submission: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     )
   }
