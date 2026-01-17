@@ -5,9 +5,10 @@ import { Upload, X, Image as ImageIcon, Link as LinkIcon } from 'lucide-react'
 
 interface ImageUploaderProps {
   onImageInsert: (markdown: string) => void
+  onImageSelected?: (info: { src: string; caption?: string }) => void
 }
 
-export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
+export default function ImageUploader({ onImageInsert, onImageSelected }: ImageUploaderProps) {
   const [showUrlInput, setShowUrlInput] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
   const [altText, setAltText] = useState('')
@@ -21,6 +22,7 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
         ? `![${altText || 'Image'}](${imageUrl})\n*${caption}*\n`
         : `![${altText || 'Image'}](${imageUrl})\n`
       onImageInsert(markdown)
+      onImageSelected?.({ src: imageUrl, caption: caption || undefined })
       setImageUrl('')
       setAltText('')
       setCaption('')
@@ -63,6 +65,7 @@ export default function ImageUploader({ onImageInsert }: ImageUploaderProps) {
         : `![${altText || file.name}](${data.url})\n`
       
       onImageInsert(markdown)
+      onImageSelected?.({ src: data.url, caption: caption || undefined })
       setAltText('')
       setCaption('')
       

@@ -4,15 +4,33 @@ import matter from 'gray-matter'
 
 const contentDirectory = path.join(process.cwd(), 'content/wiki')
 
+export interface InfoboxSection {
+  title?: string
+  items: {
+    label: string
+    value: string
+    isDate?: boolean
+    isLink?: boolean
+  }[]
+}
+
+export interface InfoboxData {
+  title?: string
+  headerColor?: string
+  image?: {
+    src: string
+    caption: string
+  }
+  sections: InfoboxSection[]
+}
+
 export interface WikiArticle {
   slug: string
   title: string
   description: string
   lastUpdated: string
   category: string
-  infobox?: {
-    [key: string]: string
-  }
+  infobox?: InfoboxData
   youtubeVideos?: string[]
   content: string
   rawContent: string
@@ -118,9 +136,7 @@ export async function getWikiArticle(slug: string): Promise<WikiArticle | null> 
           ? data.lastUpdated.toISOString().split('T')[0]
           : String(data.lastUpdated),
       category: data.category,
-      infobox: data.infobox ? Object.fromEntries(
-        Object.entries(data.infobox).map(([key, value]) => [key, String(value)])
-      ) : undefined,
+      infobox: data.infobox ? data.infobox as InfoboxData : undefined,
       youtubeVideos: data.youtubeVideos && Array.isArray(data.youtubeVideos) ? data.youtubeVideos : undefined,
       content: contentWithLinks,
       rawContent: content,

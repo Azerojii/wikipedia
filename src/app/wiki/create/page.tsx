@@ -16,24 +16,58 @@ function CreateArticleForm() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('General')
   const [content, setContent] = useState('')
-  const [infoboxFields, setInfoboxFields] = useState<{ key: string; value: string }[]>([])
+  const [infoboxTitle, setInfoboxTitle] = useState('')
+  const [infoboxColor, setInfoboxColor] = useState('#8b7355')
+  const [infoboxImage, setInfoboxImage] = useState('')
+  const [infoboxImageCaption, setInfoboxImageCaption] = useState('')
+  const [infoboxSections, setInfoboxSections] = useState<Array<{
+    title: string
+    items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
+  }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const addInfoboxField = () => {
-    setInfoboxFields([...infoboxFields, { key: '', value: '' }])
+  const addInfoboxSection = () => {
+    setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])
   }
 
-  const removeInfoboxField = (index: number) => {
-    setInfoboxFields(infoboxFields.filter((_, i) => i !== index))
+  const removeInfoboxSection = (index: number) => {
+    setInfoboxSections(infoboxSections.filter((_, i) => i !== index))
   }
 
-  const updateInfoboxField = (index: number, field: 'key' | 'value', value: string) => {
-    const updated = [...infoboxFields]
-    updated[index][field] = value
-    setInfoboxFields(updated)
+  const updateInfoboxSectionTitle = (index: number, title: string) => {
+    const updated = [...infoboxSections]
+    updated[index].title = title
+    setInfoboxSections(updated)
+  }
+
+  const addInfoboxItem = (sectionIndex: number) => {
+    const updated = [...infoboxSections]
+    updated[sectionIndex].items.push({ label: '', value: '', type: 'text' })
+    setInfoboxSections(updated)
+  }
+
+  const removeInfoboxItem = (sectionIndex: number, itemIndex: number) => {
+    const updated = [...infoboxSections]
+    updated[sectionIndex].items = updated[sectionIndex].items.filter((_, i) => i !== itemIndex)
+    setInfoboxSections(updated)
+  }
+
+  const updateInfoboxItem = (
+    sectionIndex: number,
+    itemIndex: number,
+    field: 'label' | 'value' | 'type',
+    value: string
+  ) => {
+    const updated = [...infoboxSections]
+    if (field === 'type') {
+      updated[sectionIndex].items[itemIndex][field] = value as 'text' | 'date' | 'link'
+    } else {
+      updated[sectionIndex].items[itemIndex][field] = value
+    }
+    setInfoboxSections(updated)
   }
 
   const addYoutubeVideo = () => {
@@ -68,19 +102,40 @@ function CreateArticleForm() {
     }
   }
 
+  const handleInfoboxImageAutoFill = ({ src, caption }: { src: string; caption?: string }) => {
+    setInfoboxImage(src)
+    setInfoboxImageCaption(caption || '')
+    setInfoboxTitle((current) => current || title || '')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsSubmitting(true)
 
     try {
-      // Convert infobox fields to object
-      const infobox = infoboxFields.reduce((acc, field) => {
-        if (field.key && field.value) {
-          acc[field.key] = field.value
-        }
-        return acc
-      }, {} as { [key: string]: string })
+      // Build structured infobox data
+      const infoboxData = {
+        title: infoboxTitle || title,
+        headerColor: infoboxColor,
+        image: infoboxImage ? {
+          src: infoboxImage,
+          caption: infoboxImageCaption
+        } : undefined,
+        sections: infoboxSections
+          .map(section => ({
+            title: section.title || undefined,
+            items: section.items
+              .filter(item => item.label && item.value)
+              .map(item => ({
+                label: item.label,
+                value: item.value,
+                isDate: item.type === 'date',
+                isLink: item.type === 'link'
+              }))
+          }))
+          .filter(section => section.items.length > 0)
+      }
 
       // Filter out empty YouTube links
       const validYoutubeVideos = youtubeVideos.filter(video => video.trim() !== '')
@@ -95,7 +150,7 @@ function CreateArticleForm() {
           description,
           category,
           content,
-          infobox: Object.keys(infobox).length > 0 ? infobox : undefined,
+          infobox: infoboxData,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
       })
@@ -184,44 +239,143 @@ function CreateArticleForm() {
             </div>
 
             {/* Infobox */}
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                Infobox (Optionnel)
-              </label>
-              <div className="space-y-2">
-                {infoboxFields.map((field, index) => (
-                  <div key={index} className="flex gap-2">
+            <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+              <div className="mb-4">
+                <label className="block text-sm font-bold mb-2">
+                  Infobox
+                </label>
+                <p className="text-xs text-gray-600 mb-4">
+                  L'infobox s'affiche sur le côté droit de l'article avec les informations clés.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {/* Infobox Title and Color */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium mb-1">Titre de l'infobox</label>
                     <input
                       type="text"
-                      value={field.key}
-                      onChange={(e) => updateInfoboxField(index, 'key', e.target.value)}
-                      placeholder="Clé (e.g., Fondation)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      value={infoboxTitle}
+                      onChange={(e) => setInfoboxTitle(e.target.value)}
+                      placeholder="Laissez vide pour utiliser le titre de l'article"
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1">Couleur de l'en-tête</label>
                     <input
-                      type="text"
-                      value={field.value}
-                      onChange={(e) => updateInfoboxField(index, 'value', e.target.value)}
-                      placeholder="Valeur (e.g., 1926)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      type="color"
+                      value={infoboxColor}
+                      onChange={(e) => setInfoboxColor(e.target.value)}
+                      className="w-full h-10 border border-gray-300 rounded"
                     />
+                  </div>
+                </div>
+
+                {/* Infobox Image Uploader */}
+                <div>
+                  <label className="block text-xs font-medium mb-2">Image de l'infobox</label>
+                  <ImageUploader
+                    onImageInsert={() => {}} 
+                    onImageSelected={handleInfoboxImageAutoFill}
+                  />
+                  {infoboxImage && (
+                    <div className="mt-2 p-2 bg-white border border-gray-300 rounded">
+                      <p className="text-xs text-gray-600 mb-1">Image sélectionnée:</p>
+                      <img src={infoboxImage} alt="Preview" className="w-32 h-32 object-cover rounded" />
+                      <p className="text-xs text-gray-600 mt-1">{infoboxImageCaption}</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInfoboxImage('')
+                          setInfoboxImageCaption('')
+                        }}
+                        className="mt-2 text-xs text-red-600 hover:underline"
+                      >
+                        Supprimer l'image
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Infobox Sections */}
+                <div className="space-y-4">
+                    <label className="block text-xs font-medium">Sections</label>
+                    {infoboxSections.map((section, sectionIndex) => (
+                      <div key={sectionIndex} className="border border-gray-300 rounded p-3 bg-white">
+                        <div className="flex items-center gap-2 mb-3">
+                          <input
+                            type="text"
+                            value={section.title}
+                            onChange={(e) => updateInfoboxSectionTitle(sectionIndex, e.target.value)}
+                            placeholder="Titre de la section (ex: Fonctions, Biographie)"
+                            className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm font-medium"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeInfoboxSection(sectionIndex)}
+                            className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                          >
+                            Supprimer section
+                          </button>
+                        </div>
+
+                        <div className="space-y-2">
+                          {section.items.map((item, itemIndex) => (
+                            <div key={itemIndex} className="flex gap-2">
+                              <input
+                                type="text"
+                                value={item.label}
+                                onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'label', e.target.value)}
+                                placeholder="Label (ex: Naissance)"
+                                className="w-1/3 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                              />
+                              <input
+                                type="text"
+                                value={item.value}
+                                onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'value', e.target.value)}
+                                placeholder="Valeur (ex: 1868)"
+                                className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                              />
+                              <select
+                                value={item.type}
+                                onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'type', e.target.value)}
+                                className="w-24 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                              >
+                                <option value="text">Texte</option>
+                                <option value="date">Date</option>
+                                <option value="link">Lien</option>
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => removeInfoboxItem(sectionIndex, itemIndex)}
+                                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => addInfoboxItem(sectionIndex)}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+                          >
+                            <Plus size={12} />
+                            Ajouter un champ
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                     <button
                       type="button"
-                      onClick={() => removeInfoboxField(index)}
-                      className="px-3 py-2 bg-destructive text-white rounded hover:opacity-90 text-sm"
+                      onClick={addInfoboxSection}
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm"
                     >
-                      Supprimer
+                      <Plus size={16} />
+                      Ajouter une section
                     </button>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addInfoboxField}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm"
-                >
-                  <Plus size={16} />
-                  Ajouter un champ Infobox
-                </button>
               </div>
             </div>
 
@@ -270,11 +424,6 @@ function CreateArticleForm() {
               </label>
               <div className="text-xs text-gray-600 mb-2">
                 Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
-              </div>
-              
-              {/* Image Uploader */}
-              <div className="mb-4">
-                <ImageUploader onImageInsert={handleImageInsert} />
               </div>
               
               <textarea

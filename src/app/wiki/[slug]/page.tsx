@@ -99,7 +99,14 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
 
             {/* Right Sidebar with Infobox and TOC */}
             <aside className="w-64 flex-shrink-0">
-              {article.infobox && <Infobox data={article.infobox} title={article.title} />}
+              {article.infobox && (
+                <Infobox
+                  title={article.infobox.title || article.title}
+                  headerColor={article.infobox.headerColor}
+                  image={article.infobox.image}
+                  sections={article.infobox.sections}
+                />
+              )}
               {toc.length > 0 && <TableOfContents items={toc} />}
             </aside>
           </div>
