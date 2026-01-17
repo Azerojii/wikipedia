@@ -32,8 +32,6 @@ infobox:
           isDate: false
           isLink: false
 ---
-# Si Kaddour Ben Ghabrit
-
 **Si Kaddour Ben Ghabrit** (1868–1954) est un diplomate, intellectuel et religieux musulman algérien, connu pour avoir été le **fondateur et premier recteur de la Grande Mosquée de Paris**. Figure majeure de l’islam en France au XXᵉ siècle, il joua également un rôle diplomatique important et est reconnu pour avoir contribué au sauvetage de juifs durant l’Occupation allemande.
 
 ## Biographie
