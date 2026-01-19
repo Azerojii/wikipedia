@@ -7,7 +7,7 @@ import UserMenu from './UserMenu'
 
 export default function WikiHeader() {
   return (
-    <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700 shadow-sm">
+    <header className="sticky top-0 z-50 bg-gray-200 border-b border-gray-300 shadow-sm">
       <div className="max-w-[1400px] mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -19,21 +19,21 @@ export default function WikiHeader() {
                 height={40}
                 className="object-contain"
               />
-              <div className="text-2xl font-bold font-serif text-white">Musulmans Français</div>
+              <div className="text-2xl font-bold font-serif text-primary">Musulmans Français</div>
             </Link>
             
-            <nav className="hidden md:flex gap-6 text-sm text-gray-300">
-              <Link href="/" className="hover:text-white transition-colors">
+            <nav className="hidden md:flex gap-6 text-sm">
+              <Link href="/" className="hover:text-primary transition-colors">
                 Page d'accueil
               </Link>
-              <Link href="/wiki/Grande_Mosquée_de_Paris" className="hover:text-white transition-colors">
+              <Link href="/wiki/Grande_Mosquée_de_Paris" className="hover:text-primary transition-colors">
                 Contenu
               </Link>
-              <button className="hover:text-white transition-colors">Article aléatoire</button>
-              <Link href="/submit" className="hover:text-white transition-colors font-medium">
+              <button className="hover:text-primary transition-colors">Article aléatoire</button>
+              <Link href="/submit" className="hover:text-primary transition-colors font-medium">
                 Soumettre
               </Link>
-              <Link href="/admin" className="hover:text-white transition-colors font-medium">
+              <Link href="/admin" className="hover:text-primary transition-colors font-medium">
                 Admin
               </Link>
             </nav>
