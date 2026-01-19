@@ -3,7 +3,7 @@ title: Si Kaddour Ben Ghabrit
 description: >-
   Théologien et diplomate algérien, fondateur et premier recteur de la Grande
   Mosquée de Paris (1926-1954)
-lastUpdated: '2026-01-17'
+lastUpdated: '2026-01-19'
 category: Personnalités
 infobox:
   title: Si Kaddour Ben Ghabrit
@@ -28,7 +28,7 @@ infobox:
           isDate: false
           isLink: false
         - label: Nationalité
-          value: "Algérienne \U0001F1E9\U0001F1FF, Marocaine \U0001F1F2\U0001F1E6, Française \U0001F1EB\U0001F1F7"
+          value: "Algérienne \U0001F1E9\U0001F1FF, Française \U0001F1EB\U0001F1F7"
           isDate: false
           isLink: false
 ---
