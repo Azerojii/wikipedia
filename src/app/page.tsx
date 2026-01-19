@@ -13,7 +13,7 @@ export default function Home() {
   const articles = getAllWikiMetadata()
   const featuredArticles = articles.slice(0, 6) // Get first 6 articles
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-gray-50">
       <WikiHeader />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
