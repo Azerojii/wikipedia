@@ -13,7 +13,7 @@ export default function Home() {
   const articles = getAllWikiMetadata()
   const featuredArticles = articles.slice(0, 6) // Get first 6 articles
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-200">
       <WikiHeader />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
@@ -21,8 +21,8 @@ export default function Home() {
             <Image 
               src="/logo.png" 
               alt="Musulmans Français Logo" 
-              width={80} 
-              height={80}
+              width={200} 
+              height={200}
               className="object-contain"
             />
             <h1 className="text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
