@@ -13,7 +13,7 @@ infobox:
   sections:
     - items:
         - label: '2003'
-          value: mali ML
+          value: mali ml
           isDate: false
           isLink: false
 ---
