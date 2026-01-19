@@ -20,14 +20,18 @@ export default function Home() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <Image 
               src="/logo.png" 
-              alt="MuslimWiki Logo" 
+              alt="Musulmans Français Logo" 
               width={80} 
               height={80}
               className="object-contain"
             />
-            <h1 className="text-6xl font-serif font-bold text-primary">MuslimWiki</h1>
+            <h1 className="text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
           </div>
           <p className="text-xl text-gray-600">L'encyclopédie libre sur la Grande Mosquée de Paris</p>
+          <p className="text-lg text-gray-700 mt-4 italic">
+            À l'occasion du centenaire de la Grande Mosquée de Paris,
+            en hommage à celles et ceux qui ont cru en la coexistence durable entre l'islam et la France.
+          </p>
         </div>
 
         <div className="bg-wiki-bg border border-wiki-border rounded-lg p-8 mb-8">
@@ -57,7 +61,7 @@ export default function Home() {
         </div>
 
         <div className="mt-12 text-center text-sm text-gray-500">
-          <p>MuslimWiki contient {articles.length} article(s) sur la Grande Mosquée de Paris</p>
+          <p>Musulmans Français contient {articles.length} article(s) sur la Grande Mosquée de Paris</p>
         </div>
       </div>
     </main>
