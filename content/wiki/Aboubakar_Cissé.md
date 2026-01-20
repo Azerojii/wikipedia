@@ -1,7 +1,7 @@
 ---
 title: Aboubakar Cissé
 description: ''
-lastUpdated: '2026-01-19'
+lastUpdated: '2026-01-20'
 category: General
 infobox:
   title: Aboubakar Cissé
