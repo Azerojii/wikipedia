@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
+import CountryEmojiPicker from '@/components/CountryEmojiPicker'
+import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus, Info } from 'lucide-react'
 
 export default function SubmitArticlePage() {
@@ -14,9 +16,11 @@ export default function SubmitArticlePage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Histoire')
+  const [categories, setCategories] = useState<string[]>(['Histoire'])
   const [content, setContent] = useState('')
   const [submitterName, setSubmitterName] = useState('')
   const [submitterEmail, setSubmitterEmail] = useState('')
+  const [useRichText, setUseRichText] = useState(false)
   const [infoboxTitle, setInfoboxTitle] = useState('')
   const [infoboxColor, setInfoboxColor] = useState('#067782')
   const [infoboxImage, setInfoboxImage] = useState('')
@@ -29,6 +33,23 @@ export default function SubmitArticlePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      const data = await response.json()
+      if (data.categories && data.categories.length > 0) {
+        setCategories(data.categories)
+        setCategory(data.categories[0])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
 
   const addInfoboxSection = () => {
     setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])
@@ -302,13 +323,9 @@ export default function SubmitArticlePage() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option>Histoire</option>
-                <option>Architecture</option>
-                <option>Culture</option>
-                <option>Religion</option>
-                <option>Événements</option>
-                <option>Personnalités</option>
-                <option>Général</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
@@ -493,20 +510,59 @@ export default function SubmitArticlePage() {
 
             {/* Content */}
             <div>
-              <label className="block text-sm font-bold mb-2">
-                Contenu de l'article (Markdown) <span className="text-red-500">*</span>
-              </label>
-              <div className="text-xs text-gray-600 mb-2">
-                Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-bold">
+                  Contenu de l'article <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-4">
+                  <CountryEmojiPicker 
+                    onSelect={(emoji) => {
+                      if (useRichText) {
+                        setContent(content + emoji)
+                      } else if (textareaRef.current) {
+                        const start = textareaRef.current.selectionStart
+                        const end = textareaRef.current.selectionEnd
+                        const newContent = content.substring(0, start) + emoji + content.substring(end)
+                        setContent(newContent)
+                        setTimeout(() => {
+                          textareaRef.current?.focus()
+                          textareaRef.current?.setSelectionRange(start + emoji.length, start + emoji.length)
+                        }, 0)
+                      }
+                    }}
+                  />
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={useRichText}
+                      onChange={(e) => setUseRichText(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span>Éditeur enrichi</span>
+                  </label>
+                </div>
               </div>
-              <textarea
-                ref={textareaRef}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
-                rows={20}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
-                placeholder="# Titre de l'article
+              {!useRichText && (
+                <div className="text-xs text-gray-600 mb-2">
+                  Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
+                </div>
+              )}
+              
+              {useRichText ? (
+                <RichTextEditor
+                  value={content}
+                  onChange={setContent}
+                  placeholder="Commencez à écrire votre article ici..."
+                />
+              ) : (
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  required
+                  rows={20}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                  placeholder="# Titre de l'article
 
 ## Introduction
 
@@ -516,7 +572,8 @@ Votre contenu ici...
 
 - [[Article lié 1]]
 - [[Article lié 2]]"
-              />
+                />
+              )}
             </div>
 
             {/* Submit Button */}

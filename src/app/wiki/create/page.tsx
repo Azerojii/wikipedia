@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
+import CountryEmojiPicker from '@/components/CountryEmojiPicker'
+import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus } from 'lucide-react'
 
 function CreateArticleForm() {
@@ -16,6 +18,7 @@ function CreateArticleForm() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('General')
   const [content, setContent] = useState('')
+  const [useRichText, setUseRichText] = useState(true)
   const [infoboxTitle, setInfoboxTitle] = useState('')
   const [infoboxColor, setInfoboxColor] = useState('#067782')
   const [infoboxImage, setInfoboxImage] = useState('')
@@ -419,21 +422,59 @@ function CreateArticleForm() {
 
             {/* Content */}
             <div>
-              <label className="block text-sm font-bold mb-2">
-                Contenu de l'article (Markdown) <span className="text-red-500">*</span>
-              </label>
-              <div className="text-xs text-gray-600 mb-2">
-                Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-bold">
+                  Contenu de l'article <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-4">
+                  <CountryEmojiPicker 
+                    onSelect={(emoji) => {
+                      if (useRichText) {
+                        setContent(content + emoji)
+                      } else if (textareaRef.current) {
+                        const start = textareaRef.current.selectionStart
+                        const end = textareaRef.current.selectionEnd
+                        const newContent = content.substring(0, start) + emoji + content.substring(end)
+                        setContent(newContent)
+                        setTimeout(() => {
+                          textareaRef.current?.focus()
+                          textareaRef.current?.setSelectionRange(start + emoji.length, start + emoji.length)
+                        }, 0)
+                      }
+                    }}
+                  />
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={useRichText}
+                      onChange={(e) => setUseRichText(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span>Éditeur enrichi</span>
+                  </label>
+                </div>
               </div>
+              {!useRichText && (
+                <div className="text-xs text-gray-600 mb-2">
+                  Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
+                </div>
+              )}
               
-              <textarea
-                ref={textareaRef}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
-                rows={20}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
-                placeholder="# Titre de l'article
+              {useRichText ? (
+                <RichTextEditor
+                  value={content}
+                  onChange={setContent}
+                  placeholder="Commencez à écrire votre article ici..."
+                />
+              ) : (
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  required
+                  rows={20}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                  placeholder="# Titre de l'article
 
 ## Introduction
 
@@ -443,7 +484,8 @@ Votre contenu ici...
 
 - [[Article lié 1]]
 - [[Article lié 2]]"
-              />
+                />
+              )}
             </div>
 
             {/* Submit Button */}

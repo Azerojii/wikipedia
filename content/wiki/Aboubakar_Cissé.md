@@ -1,8 +1,8 @@
 ---
 title: Aboubakar Cissé
 description: ''
-lastUpdated: '2026-01-19'
-category: General
+lastUpdated: '2026-01-30'
+category: Général
 infobox:
   title: Aboubakar Cissé
   headerColor: '#067782'

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
-import { Edit, Trash2, Plus, FolderPlus, Settings } from 'lucide-react'
+import { Edit, Trash2, Plus, FolderPlus, Settings, X } from 'lucide-react'
 
 interface Article {
   slug: string
@@ -21,6 +21,8 @@ export default function AdminPage() {
   const [categories, setCategories] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'articles' | 'categories'>('articles')
+  const [newCategory, setNewCategory] = useState('')
+  const [isAddingCategory, setIsAddingCategory] = useState(false)
 
   useEffect(() => {
     fetchArticles()
@@ -40,12 +42,70 @@ export default function AdminPage() {
   }
 
   const fetchCategories = async () => {
-    // Extract unique categories from articles
-    const response = await fetch('/api/search')
-    const data = await response.json()
-    const articleData = data.results || data
-    const uniqueCategories = Array.from(new Set(articleData.map((a: Article) => a.category)))
-    setCategories(uniqueCategories as string[])
+    try {
+      const response = await fetch('/api/categories')
+      const data = await response.json()
+      setCategories(data.categories || [])
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) return
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', category: newCategory.trim() }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setCategories(data.categories)
+        setNewCategory('')
+        setIsAddingCategory(false)
+      } else {
+        alert(data.error || 'Erreur lors de l\'ajout de la catégorie')
+      }
+    } catch (error) {
+      console.error('Error adding category:', error)
+      alert('Erreur lors de l\'ajout de la catégorie')
+    }
+  }
+
+  const handleDeleteCategory = async (category: string) => {
+    const articlesInCategory = articles.filter((a) => a.category === category)
+    
+    if (articlesInCategory.length > 0) {
+      alert(`Impossible de supprimer cette catégorie car ${articlesInCategory.length} article(s) l'utilise(nt).`)
+      return
+    }
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category}" ?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'remove', category }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setCategories(data.categories)
+      } else {
+        alert(data.error || 'Erreur lors de la suppression de la catégorie')
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error)
+      alert('Erreur lors de la suppression de la catégorie')
+    }
   }
 
   const handleDelete = async (slug: string) => {
@@ -198,26 +258,90 @@ export default function AdminPage() {
           {/* Categories Tab */}
           {activeTab === 'categories' && (
             <div>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Catégories</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Gérer les catégories</h2>
+                <button
+                  onClick={() => setIsAddingCategory(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded hover:opacity-90"
+                >
+                  <Plus size={16} />
+                  Nouvelle catégorie
+                </button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {categories.map((category) => (
-                  <div
-                    key={category}
-                    className="border border-gray-300 rounded-lg p-4 hover:bg-gray-50"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FolderPlus size={20} className="text-primary" />
-                      <span className="font-medium">{category}</span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {articles.filter((a) => a.category === category).length} article(s)
-                    </p>
+              {isAddingCategory && (
+                <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-6">
+                  <h3 className="font-bold mb-3">Ajouter une nouvelle catégorie</h3>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="Nom de la catégorie"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
+                    />
+                    <button
+                      onClick={handleAddCategory}
+                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      Ajouter
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsAddingCategory(false)
+                        setNewCategory('')
+                      }}
+                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                    >
+                      Annuler
+                    </button>
                   </div>
-                ))}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {categories.map((category) => {
+                  const articleCount = articles.filter((a) => a.category === category).length
+                  return (
+                    <div
+                      key={category}
+                      className="border border-gray-300 rounded-lg p-4 hover:bg-gray-50 relative group"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2 flex-1">
+                          <FolderPlus size={20} className="text-primary flex-shrink-0" />
+                          <div>
+                            <span className="font-medium block">{category}</span>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {articleCount} article(s)
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteCategory(category)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Supprimer"
+                          disabled={articleCount > 0}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                      {articleCount > 0 && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          Supprimez d'abord les articles de cette catégorie
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
+
+              {categories.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Aucune catégorie trouvée. Ajoutez-en une !
+                </div>
+              )}
             </div>
           )}
         </main>

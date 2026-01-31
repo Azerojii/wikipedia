@@ -3,15 +3,37 @@ import Image from 'next/image'
 import { Search } from 'lucide-react'
 import SearchBar from '@/components/SearchBar'
 import WikiHeader from '@/components/WikiHeader'
+import AllArticlesList from '@/components/AllArticlesList'
 import { getAllWikiMetadata } from '@/lib/wiki'
+import fs from 'fs'
+import path from 'path'
 
 // Force dynamic rendering to always show latest articles
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+function isNewArticle(lastUpdated: string): boolean {
+  const articleDate = new Date(lastUpdated)
+  const threeDaysAgo = new Date()
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+  return articleDate >= threeDaysAgo
+}
+
 export default function Home() {
   const articles = getAllWikiMetadata()
-  const featuredArticles = articles.slice(0, 6) // Get first 6 articles
+  
+  // Load categories from the JSON file
+  const categoriesPath = path.join(process.cwd(), 'content', 'categories.json')
+  const categoriesData = fs.readFileSync(categoriesPath, 'utf8')
+  const categories = JSON.parse(categoriesData) as string[]
+  
+  // Check if each category has new articles
+  const categoryData = categories.map(category => {
+    const categoryArticles = articles.filter(article => article.category === category)
+    const hasNewArticles = categoryArticles.some(article => isNewArticle(article.lastUpdated))
+    return { name: category, hasNewArticles }
+  })
+  
   return (
     <main className="min-h-screen bg-gray-200">
       <WikiHeader />
@@ -40,25 +62,32 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {featuredArticles.length > 0 ? (
-            featuredArticles.map((article) => (
+        <h2 className="text-2xl font-serif font-bold mb-4">Catégories</h2>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {categoryData.length > 0 ? (
+            categoryData.map((category) => (
               <Link 
-                key={article.slug}
-                href={`/wiki/${article.slug}`} 
+                key={category.name}
+                href={`/category/${encodeURIComponent(category.name)}`} 
                 className="p-6 bg-wiki-bg border border-wiki-border rounded-lg hover:bg-gray-100 transition"
               >
-                <h2 className="text-xl font-bold text-primary mb-2">{article.title}</h2>
-                <p className="text-gray-600">{article.description}</p>
-                <p className="text-xs text-gray-500 mt-2">{article.category}</p>
+                <h3 className="text-xl font-bold text-primary mb-2">{category.name}</h3>
+                {category.hasNewArticles && (
+                  <span className="inline-block px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
+                    Nouveaux articles
+                  </span>
+                )}
               </Link>
             ))
           ) : (
             <div className="col-span-3 text-center py-8">
-              <p className="text-gray-600">Aucun article disponible. Créez votre premier article !</p>
+              <p className="text-gray-600">Aucune catégorie disponible.</p>
             </div>
           )}
         </div>
+
+        {/* All Articles Section */}
+        <AllArticlesList articles={articles} />
 
         <div className="mt-12 text-center text-sm text-gray-500">
           <p>Musulmans Français contient {articles.length} article(s) sur la Grande Mosquée de Paris</p>

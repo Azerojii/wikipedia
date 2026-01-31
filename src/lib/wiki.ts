@@ -41,6 +41,7 @@ export interface WikiMetadata {
   title: string
   description: string
   category: string
+  lastUpdated: string
 }
 
 /**
@@ -106,6 +107,11 @@ export function getAllWikiMetadata(): WikiMetadata[] {
       title: String(data.title || ''),
       description: String(data.description || ''),
       category: String(data.category || ''),
+      lastUpdated: typeof data.lastUpdated === 'string' 
+        ? data.lastUpdated 
+        : data.lastUpdated instanceof Date 
+          ? data.lastUpdated.toISOString().split('T')[0]
+          : String(data.lastUpdated),
     }
   })
 }
