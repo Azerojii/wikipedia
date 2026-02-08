@@ -1,5 +1,5 @@
 ---
-title: Abû Hâmid al-Ghazâl
+title: Abû Hâmid al-Ghazâli
 description: >-
   Abû Hâmid al-Ghazâlî (1058–1111) est un savant musulman majeur, théologien et
   mystique. Il est connu pour avoir uni foi, raison et spiritualité dans l’islam
@@ -25,8 +25,6 @@ infobox:
           isDate: false
           isLink: false
 ---
-# Abû Hâmid Al-Ghazâlî
-
 **Abû Hâmid Muhammad ibn Muhammad al-Ghazâlî** (en arabe : أبو حامد الغزالي), souvent appelé **Imam Al-Ghazâlî**, est un théologien, juriste, philosophe et mystique musulman persan, né en **1058** à **Tous** (actuel Iran) et mort en **1111**. Il est considéré comme l’une des figures majeures de l’islam sunnite et porte le titre honorifique de **Hujjat al-Islam** (« Preuve de l’islam »).
 
 ---
