@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { createOrUpdateGitHubFile } from '@/lib/github'
 import fs from 'fs'
 import path from 'path'
 
 const categoriesFilePath = path.join(process.cwd(), 'content', 'categories.json')
+const categoriesGitHubPath = 'content/categories.json'
 
 // Initialize categories file if it doesn't exist
 function initializeCategoriesFile() {
@@ -54,7 +56,22 @@ export async function POST(request: Request) {
     if (action === 'add') {
       if (!categories.includes(category)) {
         categories.push(category)
-        fs.writeFileSync(categoriesFilePath, JSON.stringify(categories, null, 2))
+        const newContent = JSON.stringify(categories, null, 2) + '\n'
+        
+        // Use GitHub API in production, fs in development
+        const result = await createOrUpdateGitHubFile(
+          categoriesGitHubPath,
+          newContent,
+          `Add category: ${category}`
+        )
+        
+        if (!result.success) {
+          return NextResponse.json(
+            { error: result.error || 'Failed to save categories' },
+            { status: 500 }
+          )
+        }
+        
         return NextResponse.json({ success: true, categories })
       } else {
         return NextResponse.json(
@@ -64,7 +81,22 @@ export async function POST(request: Request) {
       }
     } else if (action === 'remove') {
       categories = categories.filter(cat => cat !== category)
-      fs.writeFileSync(categoriesFilePath, JSON.stringify(categories, null, 2))
+      const newContent = JSON.stringify(categories, null, 2) + '\n'
+      
+      // Use GitHub API in production, fs in development
+      const result = await createOrUpdateGitHubFile(
+        categoriesGitHubPath,
+        newContent,
+        `Remove category: ${category}`
+      )
+      
+      if (!result.success) {
+        return NextResponse.json(
+          { error: result.error || 'Failed to save categories' },
+          { status: 500 }
+        )
+      }
+      
       return NextResponse.json({ success: true, categories })
     } else {
       return NextResponse.json(
