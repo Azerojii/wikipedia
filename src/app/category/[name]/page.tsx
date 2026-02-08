@@ -15,8 +15,9 @@ function isNewArticle(lastUpdated: string): boolean {
   return articleDate >= threeDaysAgo
 }
 
-export default function CategoryPage({ params }: { params: { name: string } }) {
-  const categoryName = decodeURIComponent(params.name)
+export default async function CategoryPage({ params }: { params: Promise<{ name: string }> }) {
+  const { name } = await params
+  const categoryName = decodeURIComponent(name)
   
   // Get all articles
   const allArticles = getAllWikiMetadata()
