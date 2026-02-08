@@ -29,7 +29,6 @@ export default function WikiHeader() {
               <Link href="/wiki/Grande_Mosquée_de_Paris" className="hover:text-primary transition-colors">
                 Contenu
               </Link>
-              <button className="hover:text-primary transition-colors">Article aléatoire</button>
               <Link href="/submit" className="hover:text-primary transition-colors font-medium">
                 Soumettre
               </Link>
