@@ -334,13 +334,24 @@ function CreateArticleForm() {
                                 placeholder="Label (ex: Naissance)"
                                 className="w-1/3 px-2 py-1.5 border border-gray-300 rounded text-xs"
                               />
-                              <input
-                                type="text"
-                                value={item.value}
-                                onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'value', e.target.value)}
-                                placeholder="Valeur (ex: 1868)"
-                                className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-xs"
-                              />
+                              <div className="flex-1 flex gap-1">
+                                <input
+                                  type="text"
+                                  value={item.value}
+                                  onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'value', e.target.value)}
+                                  placeholder="Valeur (ex: 1868, Mali ml)"
+                                  className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                                />
+                                <div className="scale-75 origin-left">
+                                  <CountryEmojiPicker
+                                    onSelect={(emoji) => {
+                                      const currentValue = item.value
+                                      const newValue = currentValue ? `${currentValue} ${emoji}` : emoji
+                                      updateInfoboxItem(sectionIndex, itemIndex, 'value', newValue)
+                                    }}
+                                  />
+                                </div>
+                              </div>
                               <select
                                 value={item.type}
                                 onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'type', e.target.value)}
