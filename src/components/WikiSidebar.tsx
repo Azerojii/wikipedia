@@ -16,12 +16,6 @@ export default function WikiSidebar() {
                 Page d'accueil
               </Link>
             </li>
-            <li>
-              <Link href="/wiki/Grande_Mosquée_de_Paris" className="flex items-center gap-2 text-primary hover:underline">
-                <List size={16} />
-                Contenu
-              </Link>
-            </li>
           </ul>
         </div>
 
