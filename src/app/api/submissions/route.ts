@@ -1,46 +1,17 @@
 import { NextResponse } from 'next/server'
-import { createOrUpdateGitHubFile } from '@/lib/github'
-import matter from 'gray-matter'
-import fs from 'fs'
-import path from 'path'
+import { getSubmissions, createSubmission } from '@/lib/wiki'
 
-const pendingDirectory = path.join(process.cwd(), 'content/pending')
-
-// Get all pending submissions
-export async function GET() {
+// Get all submissions (optionally filtered by status)
+export async function GET(request: Request) {
   try {
-    if (!fs.existsSync(pendingDirectory)) {
-      fs.mkdirSync(pendingDirectory, { recursive: true })
-      return NextResponse.json({ submissions: [] })
-    }
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status') || undefined
 
-    const files = fs.readdirSync(pendingDirectory)
-    const submissions = files
-      .filter(file => file.endsWith('.md'))
-      .map(file => {
-        const fullPath = path.join(pendingDirectory, file)
-        const fileContents = fs.readFileSync(fullPath, 'utf8')
-        const { data, content } = matter(fileContents)
-        
-        return {
-          id: file.replace('.md', ''),
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          submittedAt: data.submittedAt,
-          submitterName: data.submitterName,
-          submitterEmail: data.submitterEmail,
-        }
-      })
-      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
-
+    const submissions = await getSubmissions(status)
     return NextResponse.json({ submissions })
   } catch (error) {
     console.error('Error fetching submissions:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch submissions' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 })
   }
 }
 
@@ -48,56 +19,36 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { title, description, category, content, submitterName, submitterEmail, infobox, youtubeVideos } = body
+    const { title, content, excerpt, article_type, infobox, mosque_data, image_url, categories, author_name } = body
 
-    if (!title || !content || !submitterName || !submitterEmail) {
+    if (!title || !content) {
       return NextResponse.json(
-        { error: 'Title, content, name, and email are required' },
+        { error: 'Title and content are required' },
         { status: 400 }
       )
     }
 
-    // Create unique ID with timestamp
-    const timestamp = Date.now()
-    const slug = title.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
-    const id = `${timestamp}_${slug}`
-    const fileName = `${id}.md`
-    const filePath = `content/pending/${fileName}`
-
-    // Create frontmatter
-    const frontmatter = {
+    const submission = await createSubmission({
+      slug: title.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''),
       title,
-      description: description || '',
-      category: category || 'Général',
-      submittedAt: new Date().toISOString(),
-      submitterName,
-      submitterEmail,
-      status: 'pending',
-      ...(infobox && { infobox }),
-      ...(youtubeVideos && youtubeVideos.length > 0 && { youtubeVideos }),
+      content,
+      excerpt: excerpt || '',
+      article_type: article_type || 'article',
+      infobox: infobox || null,
+      mosque_data: mosque_data || null,
+      image_url: image_url || null,
+      categories: categories || [],
+      author_name: author_name || null,
+    })
+
+    if (!submission) {
+      return NextResponse.json({ error: 'Failed to save submission' }, { status: 500 })
     }
 
-    // Create markdown file with frontmatter
-    const fileContent = matter.stringify(content, frontmatter)
-    
-    // Use GitHub API to save the file
-    const result = await createOrUpdateGitHubFile(
-      filePath,
-      fileContent,
-      `New submission: ${title}`
-    )
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || 'Failed to save submission' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      id,
-      message: 'Soumission enregistrée avec succès' 
+    return NextResponse.json({
+      success: true,
+      id: submission.id,
+      message: 'Soumission enregistrée avec succès',
     })
   } catch (error) {
     console.error('Error creating submission:', error)
@@ -107,4 +58,3 @@ export async function POST(request: Request) {
     )
   }
 }
-

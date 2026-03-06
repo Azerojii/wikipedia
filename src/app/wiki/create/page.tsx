@@ -8,6 +8,8 @@ import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
 import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus } from 'lucide-react'
+import MosqueForm from '@/components/MosqueForm'
+import type { MosqueData } from '@/types/mosque'
 
 function CreateArticleForm() {
   const router = useRouter()
@@ -28,6 +30,9 @@ function CreateArticleForm() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
+  const [articleType, setArticleType] = useState<'article' | 'mosque'>('article')
+  const [mosqueData, setMosqueData] = useState<MosqueData>({})
+  const [authorName, setAuthorName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -150,10 +155,13 @@ function CreateArticleForm() {
         },
         body: JSON.stringify({
           title,
-          description,
-          category,
+          excerpt: description,
+          categories: [category],
           content,
-          infobox: infoboxData,
+          article_type: articleType,
+          infobox: articleType === 'article' ? infoboxData : undefined,
+          mosque_data: articleType === 'mosque' ? mosqueData : undefined,
+          author_name: authorName || undefined,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
       })
@@ -241,7 +249,38 @@ function CreateArticleForm() {
               </select>
             </div>
 
+            {/* Article Type */}
+            <div>
+              <label className="block text-sm font-bold mb-2">Type d'article</label>
+              <select
+                value={articleType}
+                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque')}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="article">Article général</option>
+                <option value="mosque">Mosquée</option>
+              </select>
+            </div>
+
+            {/* Author */}
+            <div>
+              <label className="block text-sm font-bold mb-2">Auteur</label>
+              <input
+                type="text"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Nom de l'auteur (optionnel)"
+              />
+            </div>
+
+            {/* Mosque Form */}
+            {articleType === 'mosque' && (
+              <MosqueForm mosqueData={mosqueData} onChange={setMosqueData} />
+            )}
+
             {/* Infobox */}
+            {articleType === 'article' && (
             <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
               <div className="mb-4">
                 <label className="block text-sm font-bold mb-2">
@@ -392,6 +431,7 @@ function CreateArticleForm() {
                   </div>
               </div>
             </div>
+            )}
 
             {/* YouTube Videos */}
             <div>

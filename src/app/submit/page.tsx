@@ -8,6 +8,8 @@ import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
 import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus, Info } from 'lucide-react'
+import MosqueForm from '@/components/MosqueForm'
+import type { MosqueData } from '@/types/mosque'
 
 export default function SubmitArticlePage() {
   const router = useRouter()
@@ -30,6 +32,8 @@ export default function SubmitArticlePage() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
+  const [articleType, setArticleType] = useState<'article' | 'mosque'>('article')
+  const [mosqueData, setMosqueData] = useState<MosqueData>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -168,12 +172,14 @@ export default function SubmitArticlePage() {
         },
         body: JSON.stringify({
           title,
-          description,
-          category,
+          excerpt: description,
+          categories: [category],
           content,
-          submitterName,
+          article_type: articleType,
+          infobox: articleType === 'article' ? infoboxData : undefined,
+          mosque_data: articleType === 'mosque' ? mosqueData : undefined,
+          author_name: submitterName || undefined,
           submitterEmail,
-          infobox: infoboxData,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
       })
@@ -329,7 +335,26 @@ export default function SubmitArticlePage() {
               </select>
             </div>
 
+            {/* Article Type */}
+            <div>
+              <label className="block text-sm font-bold mb-2">Type d'article</label>
+              <select
+                value={articleType}
+                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque')}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="article">Article général</option>
+                <option value="mosque">Mosquée</option>
+              </select>
+            </div>
+
+            {/* Mosque Form */}
+            {articleType === 'mosque' && (
+              <MosqueForm mosqueData={mosqueData} onChange={setMosqueData} />
+            )}
+
             {/* Infobox */}
+            {articleType === 'article' && (
             <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
               <div className="mb-4">
                 <label className="block text-sm font-bold mb-2">
@@ -480,6 +505,7 @@ export default function SubmitArticlePage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* YouTube Videos */}
             <div>

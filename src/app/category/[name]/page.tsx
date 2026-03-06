@@ -1,15 +1,12 @@
 import Link from 'next/link'
 import WikiHeader from '@/components/WikiHeader'
-import { getAllWikiMetadata } from '@/lib/wiki'
-import { readFileSync } from 'fs'
-import { join } from 'path'
-import matter from 'gray-matter'
+import { getArticlesByCategory } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-function isNewArticle(lastUpdated: string): boolean {
-  const articleDate = new Date(lastUpdated)
+function isNewArticle(date: string): boolean {
+  const articleDate = new Date(date)
   const threeDaysAgo = new Date()
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
   return articleDate >= threeDaysAgo
@@ -18,30 +15,8 @@ function isNewArticle(lastUpdated: string): boolean {
 export default async function CategoryPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
   const categoryName = decodeURIComponent(name)
-  
-  // Get all articles
-  const allArticles = getAllWikiMetadata()
-  
-  // Filter articles by category
-  const categoryArticles = allArticles.filter(
-    article => article.category === categoryName
-  )
-  
-  // Get full article data including lastUpdated
-  const articlesWithDates = categoryArticles.map(article => {
-    const fullPath = join(process.cwd(), 'content/wiki', `${article.slug}.md`)
-    const fileContents = readFileSync(fullPath, 'utf8')
-    const { data } = matter(fileContents)
-    
-    return {
-      ...article,
-      lastUpdated: typeof data.lastUpdated === 'string' 
-        ? data.lastUpdated 
-        : data.lastUpdated instanceof Date 
-          ? data.lastUpdated.toISOString().split('T')[0]
-          : String(data.lastUpdated)
-    }
-  })
+
+  const articles = await getArticlesByCategory(categoryName)
 
   return (
     <main className="min-h-screen bg-gray-200">
@@ -49,23 +24,23 @@ export default async function CategoryPage({ params }: { params: Promise<{ name:
       <div className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-4xl font-serif font-bold mb-2">{categoryName}</h1>
         <p className="text-gray-600 mb-8">
-          {articlesWithDates.length} article(s) dans cette catégorie
+          {articles.length} article(s) dans cette catégorie
         </p>
 
         <div className="space-y-4">
-          {articlesWithDates.length > 0 ? (
-            articlesWithDates.map((article) => (
-              <Link 
+          {articles.length > 0 ? (
+            articles.map((article) => (
+              <Link
                 key={article.slug}
-                href={`/wiki/${article.slug}`} 
+                href={`/wiki/${article.slug}`}
                 className="block p-6 bg-wiki-bg border border-wiki-border rounded-lg hover:bg-gray-100 transition"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-primary mb-2">{article.title}</h3>
-                    <p className="text-gray-600">{article.description}</p>
+                    <p className="text-gray-600">{article.excerpt}</p>
                   </div>
-                  {isNewArticle(article.lastUpdated) && (
+                  {isNewArticle(article.updated_at) && (
                     <span className="ml-4 px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                       Nouveaux articles
                     </span>
@@ -81,10 +56,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ name:
         </div>
 
         <div className="mt-8">
-          <Link 
-            href="/"
-            className="text-primary hover:underline"
-          >
+          <Link href="/" className="text-primary hover:underline">
             ← Retour à l'accueil
           </Link>
         </div>

@@ -3,17 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-
-interface WikiMetadata {
-  slug: string
-  title: string
-  description: string
-  category: string
-  lastUpdated?: string
-}
+import { WikiArticle } from '@/lib/wiki'
 
 interface AllArticlesListProps {
-  articles: WikiMetadata[]
+  articles: WikiArticle[]
 }
 
 const INITIAL_DISPLAY = 10
@@ -42,10 +35,10 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                   <h3 className="text-lg font-bold text-primary hover:underline">
                     {article.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">{article.description}</p>
+                  <p className="text-sm text-gray-600 mt-1">{article.excerpt}</p>
                 </div>
                 <span className="text-xs text-gray-500 ml-4 flex-shrink-0 mt-1">
-                  {article.category}
+                  {article.categories?.[0] ?? ''}
                 </span>
               </div>
             </Link>

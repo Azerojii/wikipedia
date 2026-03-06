@@ -10,9 +10,13 @@ import { Edit, Trash2, Plus, FolderPlus, Settings, X } from 'lucide-react'
 interface Article {
   slug: string
   title: string
-  description: string
-  category: string
-  lastUpdated: string
+  excerpt?: string
+  description?: string
+  categories?: string[]
+  category?: string
+  updated_at?: string
+  lastUpdated?: string
+  article_type?: string
 }
 
 export default function AdminPage() {
@@ -20,20 +24,44 @@ export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [categories, setCategories] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'articles' | 'categories'>('articles')
+  const [activeTab, setActiveTab] = useState<'articles' | 'categories' | 'edit-suggestions'>('articles')
+  const [editSuggestions, setEditSuggestions] = useState<Array<{
+    id: string
+    article_slug: string
+    article_title: string
+    reason: string
+    suggester_name: string
+    status: string
+    submitted_at: string
+  }>>([])
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
   const [newCategory, setNewCategory] = useState('')
   const [isAddingCategory, setIsAddingCategory] = useState(false)
 
   useEffect(() => {
     fetchArticles()
     fetchCategories()
+    fetchEditSuggestions()
   }, [])
+
+  const fetchEditSuggestions = async () => {
+    setSuggestionsLoading(true)
+    try {
+      const response = await fetch('/api/edit-suggestions?status=pending')
+      const data = await response.json()
+      setEditSuggestions(data.suggestions || [])
+    } catch (error) {
+      console.error('Error fetching edit suggestions:', error)
+    } finally {
+      setSuggestionsLoading(false)
+    }
+  }
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch('/api/search')
+      const response = await fetch('/api/articles')
       const data = await response.json()
-      setArticles(data.results || data)
+      setArticles(data.articles || data.results || data)
     } catch (error) {
       console.error('Error fetching articles:', error)
     } finally {
@@ -77,7 +105,9 @@ export default function AdminPage() {
   }
 
   const handleDeleteCategory = async (category: string) => {
-    const articlesInCategory = articles.filter((a) => a.category === category)
+    const articlesInCategory = articles.filter((a) =>
+      (a.categories && a.categories.includes(category)) || a.category === category
+    )
     
     if (articlesInCategory.length > 0) {
       alert(`Impossible de supprimer cette catégorie car ${articlesInCategory.length} article(s) l'utilise(nt).`)
@@ -188,6 +218,21 @@ export default function AdminPage() {
             >
               Catégories
             </button>
+            <button
+              onClick={() => setActiveTab('edit-suggestions')}
+              className={`px-4 py-2 font-medium ${
+                activeTab === 'edit-suggestions'
+                  ? 'border-b-2 border-primary text-primary'
+                  : 'text-gray-600 hover:text-primary'
+              }`}
+            >
+              Suggestions de modification
+              {editSuggestions.length > 0 && (
+                <span className="ml-2 px-1.5 py-0.5 bg-yellow-400 text-yellow-900 text-xs rounded-full">
+                  {editSuggestions.length}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Articles Tab */}
@@ -225,10 +270,13 @@ export default function AdminPage() {
                           >
                             {article.title}
                           </Link>
-                          <p className="text-gray-600 mt-1">{article.description}</p>
+                          <p className="text-gray-600 mt-1">{article.excerpt || article.description || ''}</p>
                           <div className="flex gap-4 mt-2 text-sm text-gray-500">
-                            <span>Catégorie: {article.category}</span>
-                            <span>Dernière mise à jour: {article.lastUpdated}</span>
+                            <span>Catégorie: {(article.categories && article.categories[0]) || article.category || ''}</span>
+                            <span>Mise à jour: {article.updated_at ? new Date(article.updated_at).toLocaleDateString('fr-FR') : (article.lastUpdated || '')}</span>
+                            {article.article_type && article.article_type !== 'article' && (
+                              <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{article.article_type}</span>
+                            )}
                           </div>
                         </div>
                         <div className="flex gap-2 ml-4">
@@ -302,7 +350,9 @@ export default function AdminPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categories.map((category) => {
-                  const articleCount = articles.filter((a) => a.category === category).length
+                  const articleCount = articles.filter((a) =>
+                    (a.categories && a.categories.includes(category)) || a.category === category
+                  ).length
                   return (
                     <div
                       key={category}
@@ -340,6 +390,52 @@ export default function AdminPage() {
               {categories.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   Aucune catégorie trouvée. Ajoutez-en une !
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Edit Suggestions Tab */}
+          {activeTab === 'edit-suggestions' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Suggestions de modification en attente</h2>
+              {suggestionsLoading ? (
+                <div className="text-center py-8">Chargement...</div>
+              ) : editSuggestions.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  Aucune suggestion en attente
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {editSuggestions.map((suggestion) => (
+                    <div key={suggestion.id} className="border border-gray-300 rounded-lg p-4 hover:bg-gray-50">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <Link
+                            href={`/admin/edit-suggestions/${suggestion.id}`}
+                            className="text-lg font-bold text-primary hover:underline"
+                          >
+                            {suggestion.article_title}
+                          </Link>
+                          {suggestion.reason && (
+                            <p className="text-gray-600 mt-1 text-sm">{suggestion.reason}</p>
+                          )}
+                          <div className="flex gap-4 mt-2 text-sm text-gray-500">
+                            {suggestion.suggester_name && (
+                              <span>Par: {suggestion.suggester_name}</span>
+                            )}
+                            <span>{new Date(suggestion.submitted_at).toLocaleDateString('fr-FR')}</span>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/admin/edit-suggestions/${suggestion.id}`}
+                          className="px-3 py-1.5 bg-primary text-white rounded hover:opacity-90 text-sm"
+                        >
+                          Examiner
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

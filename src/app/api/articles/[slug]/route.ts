@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-import matter from 'gray-matter'
-import { getWikiArticle } from '@/lib/wiki'
-import { createOrUpdateGitHubFile, deleteGitHubFile, fileExistsOnGitHub } from '@/lib/github'
+import { getArticle, updateArticle, deleteArticle } from '@/lib/wiki'
 
 export async function GET(
   request: Request,
@@ -9,23 +7,16 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
-    const decodedSlug = decodeURIComponent(slug)
-    const article = await getWikiArticle(decodedSlug)
-    
+    const article = await getArticle(slug)
+
     if (!article) {
-      return NextResponse.json(
-        { error: 'Article not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Article not found' }, { status: 404 })
     }
 
     return NextResponse.json(article)
   } catch (error) {
     console.error('Error fetching article:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch article' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch article' }, { status: 500 })
   }
 }
 
@@ -35,9 +26,8 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { title, description, category, content, infobox, youtubeVideos } = body
+    const { title, content, excerpt, article_type, infobox, mosque_data, image_url, categories, author_name } = body
 
-    // Validate required fields
     if (!title || !content) {
       return NextResponse.json(
         { error: 'Title and content are required' },
@@ -47,55 +37,27 @@ export async function PUT(
 
     const { slug } = await params
     const decodedSlug = decodeURIComponent(slug)
-    const filePath = `content/wiki/${decodedSlug}.md`
 
-    // Check if file exists
-    const exists = await fileExistsOnGitHub(filePath)
-    if (!exists) {
-      return NextResponse.json(
-        { error: 'Article not found' },
-        { status: 404 }
-      )
-    }
-
-    // Create frontmatter
-    const frontmatter = {
+    const article = await updateArticle(decodedSlug, {
       title,
-      description: description || '',
-      lastUpdated: new Date().toISOString().split('T')[0],
-      category: category || 'General',
-      ...(infobox && { infobox }),
-      ...(youtubeVideos && youtubeVideos.length > 0 && { youtubeVideos }),
-    }
-
-    // Create markdown file with frontmatter
-    const fileContent = matter.stringify(content, frontmatter)
-
-    // Update file via GitHub API or local filesystem
-    const result = await createOrUpdateGitHubFile(
-      filePath,
-      fileContent,
-      `Update article: ${title}`
-    )
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || 'Failed to update article' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      slug: decodedSlug,
-      message: 'Article updated successfully' 
+      content,
+      excerpt: excerpt || '',
+      article_type: article_type || 'article',
+      infobox: infobox || null,
+      mosque_data: mosque_data || null,
+      image_url: image_url || null,
+      categories: categories || [],
+      author_name: author_name || null,
     })
+
+    if (!article) {
+      return NextResponse.json({ error: 'Article not found or failed to update' }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: true, slug: article.slug, article })
   } catch (error) {
     console.error('Error updating article:', error)
-    return NextResponse.json(
-      { error: 'Failed to update article' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update article' }, { status: 500 })
   }
 }
 
@@ -106,40 +68,16 @@ export async function DELETE(
   try {
     const { slug } = await params
     const decodedSlug = decodeURIComponent(slug)
-    const filePath = `content/wiki/${decodedSlug}.md`
 
-    // Check if file exists
-    const exists = await fileExistsOnGitHub(filePath)
-    if (!exists) {
-      return NextResponse.json(
-        { error: 'Article not found' },
-        { status: 404 }
-      )
+    const success = await deleteArticle(decodedSlug)
+
+    if (!success) {
+      return NextResponse.json({ error: 'Failed to delete article' }, { status: 500 })
     }
 
-    // Delete file via GitHub API or local filesystem
-    const result = await deleteGitHubFile(
-      filePath,
-      `Delete article: ${decodedSlug}`
-    )
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || 'Failed to delete article' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ 
-      success: true,
-      message: 'Article deleted successfully' 
-    })
+    return NextResponse.json({ success: true, message: 'Article deleted successfully' })
   } catch (error) {
     console.error('Error deleting article:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete article' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete article' }, { status: 500 })
   }
 }
-

@@ -10,12 +10,18 @@ import { Loader2, Check, X, Edit } from 'lucide-react'
 interface Submission {
   id: string
   title: string
-  description: string
-  category: string
-  content: string
-  submittedAt: string
-  submitterName: string
-  submitterEmail: string
+  excerpt?: string
+  description?: string
+  categories?: string[]
+  category?: string
+  content?: string
+  article_type?: string
+  mosque_data?: Record<string, unknown>
+  submitted_at?: string
+  submittedAt?: string
+  author_name?: string
+  submitterName?: string
+  submitterEmail?: string
 }
 
 export default function ReviewSubmissionPage() {
@@ -47,9 +53,9 @@ export default function ReviewSubmissionPage() {
       if (response.ok) {
         setSubmission(data)
         setEditedTitle(data.title)
-        setEditedDescription(data.description)
-        setEditedCategory(data.category)
-        setEditedContent(data.content)
+        setEditedDescription(data.excerpt || data.description || '')
+        setEditedCategory((data.categories && data.categories[0]) || data.category || '')
+        setEditedContent(data.content || '')
       } else {
         setError(data.error || 'Failed to load submission')
       }
@@ -175,7 +181,7 @@ export default function ReviewSubmissionPage() {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <strong>Soumis par:</strong> {submission.submitterName || 'Anonyme'}
+                  <strong>Soumis par:</strong> {submission.author_name || submission.submitterName || 'Anonyme'}
                 </div>
                 {submission.submitterEmail && (
                   <div>
@@ -183,11 +189,16 @@ export default function ReviewSubmissionPage() {
                   </div>
                 )}
                 <div>
-                  <strong>Date:</strong> {new Date(submission.submittedAt).toLocaleDateString('fr-FR')}
+                  <strong>Date:</strong> {new Date(submission.submitted_at || submission.submittedAt || '').toLocaleDateString('fr-FR')}
                 </div>
                 <div>
-                  <strong>Catégorie:</strong> {submission.category}
+                  <strong>Catégorie:</strong> {(submission.categories && submission.categories[0]) || submission.category || ''}
                 </div>
+                {submission.article_type && (
+                  <div>
+                    <strong>Type:</strong> {submission.article_type}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -271,10 +282,25 @@ export default function ReviewSubmissionPage() {
           ) : (
             <div>
               <h2 className="text-3xl font-serif font-bold mb-2">{submission.title}</h2>
-              {submission.description && (
-                <p className="text-gray-600 italic mb-6">{submission.description}</p>
+              {(submission.excerpt || submission.description) && (
+                <p className="text-gray-600 italic mb-6">{submission.excerpt || submission.description}</p>
               )}
-              <MarkdownRenderer content={submission.content} />
+              {submission.article_type === 'mosque' && submission.mosque_data && (
+                <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 mb-6">
+                  <h3 className="font-bold mb-3">Données mosquée</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {Object.entries(submission.mosque_data)
+                      .filter(([, v]) => v !== null && v !== undefined && v !== '')
+                      .map(([k, v]) => (
+                        <div key={k}>
+                          <strong>{k}:</strong>{' '}
+                          {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+              <MarkdownRenderer content={submission.content || ''} />
             </div>
           )}
         </main>

@@ -1,49 +1,39 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search } from 'lucide-react'
 import SearchBar from '@/components/SearchBar'
 import WikiHeader from '@/components/WikiHeader'
 import AllArticlesList from '@/components/AllArticlesList'
-import { getAllWikiMetadata } from '@/lib/wiki'
-import fs from 'fs'
-import path from 'path'
+import { getAllArticles, getAllCategories } from '@/lib/wiki'
 
-// Force dynamic rendering to always show latest articles
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-function isNewArticle(lastUpdated: string): boolean {
-  const articleDate = new Date(lastUpdated)
+function isNewArticle(date: string): boolean {
+  const articleDate = new Date(date)
   const threeDaysAgo = new Date()
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
   return articleDate >= threeDaysAgo
 }
 
-export default function Home() {
-  const articles = getAllWikiMetadata()
-  
-  // Load categories from the JSON file
-  const categoriesPath = path.join(process.cwd(), 'content', 'categories.json')
-  const categoriesData = fs.readFileSync(categoriesPath, 'utf8')
-  const categories = JSON.parse(categoriesData) as string[]
-  
-  // Check if each category has new articles
-  const categoryData = categories.map(category => {
-    const categoryArticles = articles.filter(article => article.category === category)
-    const hasNewArticles = categoryArticles.some(article => isNewArticle(article.lastUpdated))
-    return { name: category, hasNewArticles }
+export default async function Home() {
+  const [articles, categories] = await Promise.all([getAllArticles(), getAllCategories()])
+
+  const categoryData = categories.map(cat => {
+    const categoryArticles = articles.filter(a => a.categories?.includes(cat.name))
+    const hasNewArticles = categoryArticles.some(a => isNewArticle(a.updated_at))
+    return { name: cat.name, hasNewArticles }
   })
-  
+
   return (
     <main className="min-h-screen bg-gray-200">
       <WikiHeader />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <Image 
-              src="/logo.png" 
-              alt="Musulmans Français Logo" 
-              width={200} 
+            <Image
+              src="/logo.png"
+              alt="Musulmans Français Logo"
+              width={200}
               height={200}
               className="object-contain"
             />
@@ -66,9 +56,9 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {categoryData.length > 0 ? (
             categoryData.map((category) => (
-              <Link 
+              <Link
                 key={category.name}
-                href={`/category/${encodeURIComponent(category.name)}`} 
+                href={`/category/${encodeURIComponent(category.name)}`}
                 className="p-6 bg-wiki-bg border border-wiki-border rounded-lg hover:bg-gray-100 transition"
               >
                 <h3 className="text-xl font-bold text-primary mb-2">{category.name}</h3>
@@ -86,7 +76,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* All Articles Section */}
         <AllArticlesList articles={articles} />
 
         <div className="mt-12 text-center text-sm text-gray-500">
