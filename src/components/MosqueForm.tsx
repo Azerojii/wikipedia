@@ -1,7 +1,7 @@
 'use client'
 
 import { Plus, X } from 'lucide-react'
-import type { MosqueData } from '@/types/mosque'
+import type { MosqueData, MosqueFounder, CommitteeMember } from '@/types/mosque'
 
 interface MosqueFormProps {
   mosqueData: MosqueData
@@ -13,30 +13,67 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
     onChange({ ...mosqueData, [field]: value })
   }
 
+  // Founders
+  const addFounder = () => {
+    onChange({ ...mosqueData, founders: [...(mosqueData.founders || []), { name: '' }] })
+  }
+  const updateFounder = (idx: number, key: keyof MosqueFounder, val: string) => {
+    const updated = [...(mosqueData.founders || [])]
+    updated[idx] = { ...updated[idx], [key]: val }
+    onChange({ ...mosqueData, founders: updated })
+  }
+  const removeFounder = (idx: number) => {
+    onChange({ ...mosqueData, founders: (mosqueData.founders || []).filter((_, i) => i !== idx) })
+  }
+
+  // Previous Committee
+  const addPreviousMember = () => {
+    onChange({ ...mosqueData, previousCommittee: [...(mosqueData.previousCommittee || []), { name: '' }] })
+  }
+  const updatePreviousMember = (idx: number, key: keyof CommitteeMember, val: string) => {
+    const updated = [...(mosqueData.previousCommittee || [])]
+    updated[idx] = { ...updated[idx], [key]: val }
+    onChange({ ...mosqueData, previousCommittee: updated })
+  }
+  const removePreviousMember = (idx: number) => {
+    onChange({ ...mosqueData, previousCommittee: (mosqueData.previousCommittee || []).filter((_, i) => i !== idx) })
+  }
+
+  // Current Committee
+  const addCurrentMember = () => {
+    onChange({ ...mosqueData, currentCommittee: [...(mosqueData.currentCommittee || []), { name: '' }] })
+  }
+  const updateCurrentMember = (idx: number, key: keyof CommitteeMember, val: string) => {
+    const updated = [...(mosqueData.currentCommittee || [])]
+    updated[idx] = { ...updated[idx], [key]: val }
+    onChange({ ...mosqueData, currentCommittee: updated })
+  }
+  const removeCurrentMember = (idx: number) => {
+    onChange({ ...mosqueData, currentCommittee: (mosqueData.currentCommittee || []).filter((_, i) => i !== idx) })
+  }
+
+  // Facilities
   const addFacility = () => {
     onChange({ ...mosqueData, facilities: [...(mosqueData.facilities || []), ''] })
   }
-
   const updateFacility = (idx: number, value: string) => {
     const updated = [...(mosqueData.facilities || [])]
     updated[idx] = value
     onChange({ ...mosqueData, facilities: updated })
   }
-
   const removeFacility = (idx: number) => {
     onChange({ ...mosqueData, facilities: (mosqueData.facilities || []).filter((_, i) => i !== idx) })
   }
 
+  // Gallery
   const addGalleryImage = () => {
     onChange({ ...mosqueData, gallery: [...(mosqueData.gallery || []), { src: '', caption: '' }] })
   }
-
   const updateGalleryImage = (idx: number, field: 'src' | 'caption', value: string) => {
     const updated = [...(mosqueData.gallery || [])]
     updated[idx] = { ...updated[idx], [field]: value }
     onChange({ ...mosqueData, gallery: updated })
   }
-
   const removeGalleryImage = (idx: number) => {
     onChange({ ...mosqueData, gallery: (mosqueData.gallery || []).filter((_, i) => i !== idx) })
   }
@@ -185,15 +222,145 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
         </div>
       </div>
 
+      {/* Founders */}
       <div>
-        <label className="block text-xs font-medium mb-1">Fondateur(s)</label>
-        <input
-          type="text"
-          value={mosqueData.founders || ''}
-          onChange={(e) => update('founders', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-          placeholder="Nom du ou des fondateurs"
-        />
+        <label className="block text-xs font-medium mb-2">Fondateurs</label>
+        <div className="space-y-2">
+          {(mosqueData.founders || []).map((founder, idx) => (
+            <div key={idx} className="flex gap-2">
+              <input
+                type="text"
+                value={founder.name}
+                onChange={(e) => updateFounder(idx, 'name', e.target.value)}
+                className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nom du fondateur"
+              />
+              <input
+                type="text"
+                value={founder.nationality || ''}
+                onChange={(e) => updateFounder(idx, 'nationality', e.target.value)}
+                className="w-36 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nationalité"
+              />
+              <button
+                type="button"
+                onClick={() => removeFounder(idx)}
+                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addFounder}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+          >
+            <Plus size={12} />
+            Ajouter un fondateur
+          </button>
+        </div>
+      </div>
+
+      {/* Previous Committee */}
+      <div>
+        <label className="block text-xs font-medium mb-2">Anciens membres du comité</label>
+        <div className="space-y-2">
+          {(mosqueData.previousCommittee || []).map((member, idx) => (
+            <div key={idx} className="flex gap-2 flex-wrap">
+              <input
+                type="text"
+                value={member.name}
+                onChange={(e) => updatePreviousMember(idx, 'name', e.target.value)}
+                className="flex-1 min-w-[140px] px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nom"
+              />
+              <input
+                type="text"
+                value={member.nationality || ''}
+                onChange={(e) => updatePreviousMember(idx, 'nationality', e.target.value)}
+                className="w-32 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nationalité"
+              />
+              <input
+                type="text"
+                value={member.from || ''}
+                onChange={(e) => updatePreviousMember(idx, 'from', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="De (année)"
+              />
+              <input
+                type="text"
+                value={member.to || ''}
+                onChange={(e) => updatePreviousMember(idx, 'to', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="À (année)"
+              />
+              <button
+                type="button"
+                onClick={() => removePreviousMember(idx)}
+                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addPreviousMember}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+          >
+            <Plus size={12} />
+            Ajouter un ancien membre
+          </button>
+        </div>
+      </div>
+
+      {/* Current Committee */}
+      <div>
+        <label className="block text-xs font-medium mb-2">Membres actuels du comité</label>
+        <div className="space-y-2">
+          {(mosqueData.currentCommittee || []).map((member, idx) => (
+            <div key={idx} className="flex gap-2 flex-wrap">
+              <input
+                type="text"
+                value={member.name}
+                onChange={(e) => updateCurrentMember(idx, 'name', e.target.value)}
+                className="flex-1 min-w-[140px] px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nom"
+              />
+              <input
+                type="text"
+                value={member.nationality || ''}
+                onChange={(e) => updateCurrentMember(idx, 'nationality', e.target.value)}
+                className="w-32 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nationalité"
+              />
+              <input
+                type="text"
+                value={member.from || ''}
+                onChange={(e) => updateCurrentMember(idx, 'from', e.target.value)}
+                className="w-32 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Depuis (année)"
+              />
+              <button
+                type="button"
+                onClick={() => removeCurrentMember(idx)}
+                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addCurrentMember}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+          >
+            <Plus size={12} />
+            Ajouter un membre actuel
+          </button>
+        </div>
       </div>
 
       {/* Facilities */}

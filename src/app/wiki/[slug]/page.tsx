@@ -6,6 +6,7 @@ import WikiSidebar from '@/components/WikiSidebar'
 import TableOfContents from '@/components/TableOfContents'
 import Infobox from '@/components/Infobox'
 import MosqueInfobox from '@/components/MosqueInfobox'
+import ImamInfobox from '@/components/ImamInfobox'
 import EditButton from '@/components/EditButton'
 import SuggestEditButton from '@/components/SuggestEditButton'
 import PrintButton from '@/components/PrintButton'
@@ -101,6 +102,8 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
             <aside className="w-64 flex-shrink-0">
               {article.article_type === 'mosque' && article.mosque_data ? (
                 <MosqueInfobox mosque={article.mosque_data} />
+              ) : article.article_type === 'imam' && article.imam_data ? (
+                <ImamInfobox imam={article.imam_data} />
               ) : article.infobox ? (
                 <Infobox
                   title={article.infobox.title || article.title}

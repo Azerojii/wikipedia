@@ -9,7 +9,8 @@ import CountryEmojiPicker from '@/components/CountryEmojiPicker'
 import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus } from 'lucide-react'
 import MosqueForm from '@/components/MosqueForm'
-import type { MosqueData } from '@/types/mosque'
+import ImamForm from '@/components/ImamForm'
+import type { MosqueData, ImamData } from '@/types/mosque'
 
 function CreateArticleForm() {
   const router = useRouter()
@@ -30,8 +31,9 @@ function CreateArticleForm() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
-  const [articleType, setArticleType] = useState<'article' | 'mosque'>('article')
+  const [articleType, setArticleType] = useState<'article' | 'mosque' | 'imam'>('article')
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
+  const [imamData, setImamData] = useState<ImamData>({})
   const [authorName, setAuthorName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -161,6 +163,7 @@ function CreateArticleForm() {
           article_type: articleType,
           infobox: articleType === 'article' ? infoboxData : undefined,
           mosque_data: articleType === 'mosque' ? mosqueData : undefined,
+          imam_data: articleType === 'imam' ? imamData : undefined,
           author_name: authorName || undefined,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
@@ -254,11 +257,12 @@ function CreateArticleForm() {
               <label className="block text-sm font-bold mb-2">Type d'article</label>
               <select
                 value={articleType}
-                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque')}
+                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque' | 'imam')}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="article">Article général</option>
                 <option value="mosque">Mosquée</option>
+                <option value="imam">Imam</option>
               </select>
             </div>
 
@@ -277,6 +281,11 @@ function CreateArticleForm() {
             {/* Mosque Form */}
             {articleType === 'mosque' && (
               <MosqueForm mosqueData={mosqueData} onChange={setMosqueData} />
+            )}
+
+            {/* Imam Form */}
+            {articleType === 'imam' && (
+              <ImamForm imamData={imamData} onChange={setImamData} />
             )}
 
             {/* Infobox */}

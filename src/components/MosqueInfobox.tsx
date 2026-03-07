@@ -86,14 +86,87 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{mosque.architect}</td>
             </tr>
           )}
-          {mosque.founders && (
-            <tr className="border-t border-[#a2a9b1]">
-              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Fondateur(s)</td>
-              <td className="py-1.5 px-3 align-top">{mosque.founders}</td>
-            </tr>
-          )}
         </tbody>
       </table>
+
+      {/* Founders */}
+      {mosque.founders && mosque.founders.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Fondateurs
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.founders.map((founder, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{founder.name}</div>
+                    {founder.nationality && (
+                      <div className="text-xs text-gray-500">{founder.nationality}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Previous Committee */}
+      {mosque.previousCommittee && mosque.previousCommittee.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Anciens membres du comité
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.previousCommittee.map((member, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{member.name}</div>
+                    {member.nationality && (
+                      <div className="text-xs text-gray-500">{member.nationality}</div>
+                    )}
+                    {(member.from || member.to) && (
+                      <div className="text-xs text-[#0645ad]">
+                        {member.from && `De ${member.from}`}
+                        {member.from && member.to && ' — '}
+                        {member.to && `À ${member.to}`}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Current Committee */}
+      {mosque.currentCommittee && mosque.currentCommittee.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Membres actuels du comité
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.currentCommittee.map((member, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{member.name}</div>
+                    {member.nationality && (
+                      <div className="text-xs text-gray-500">{member.nationality}</div>
+                    )}
+                    {member.from && (
+                      <div className="text-xs text-[#0645ad]">Depuis {member.from}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
 
       {/* Facilities */}
       {mosque.facilities && mosque.facilities.length > 0 && (

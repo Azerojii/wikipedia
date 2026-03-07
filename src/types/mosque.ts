@@ -1,3 +1,15 @@
+export interface MosqueFounder {
+  name: string
+  nationality?: string
+}
+
+export interface CommitteeMember {
+  name: string
+  nationality?: string
+  from?: string
+  to?: string
+}
+
 export interface MosqueData {
   name?: string
   headerColor?: string
@@ -10,7 +22,21 @@ export interface MosqueData {
   totalArea?: number
   minaretHeight?: number
   architect?: string
-  founders?: string
+  founders?: MosqueFounder[]
+  previousCommittee?: CommitteeMember[]
+  currentCommittee?: CommitteeMember[]
   facilities?: string[]
   gallery?: { src: string; caption: string }[]
+}
+
+export interface ImamData {
+  name?: string
+  headerColor?: string
+  image?: { src: string; caption: string }
+  birthDate?: string
+  deathDate?: string
+  isAlive?: boolean
+  rank?: string
+  nationality?: string
+  customFields?: { label: string; value: string }[]
 }

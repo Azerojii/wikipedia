@@ -9,7 +9,8 @@ import CountryEmojiPicker from '@/components/CountryEmojiPicker'
 import RichTextEditor from '@/components/RichTextEditor'
 import { Loader2, Plus } from 'lucide-react'
 import MosqueForm from '@/components/MosqueForm'
-import type { MosqueData } from '@/types/mosque'
+import ImamForm from '@/components/ImamForm'
+import type { MosqueData, ImamData } from '@/types/mosque'
 
 export default function EditArticlePage() {
   const router = useRouter()
@@ -30,8 +31,9 @@ export default function EditArticlePage() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
-  const [articleType, setArticleType] = useState<'article' | 'mosque'>('article')
+  const [articleType, setArticleType] = useState<'article' | 'mosque' | 'imam'>('article')
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
+  const [imamData, setImamData] = useState<ImamData>({})
   const [authorName, setAuthorName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -58,6 +60,7 @@ export default function EditArticlePage() {
       setArticleType(data.article_type || 'article')
       if (data.author_name) setAuthorName(data.author_name)
       if (data.mosque_data) setMosqueData(data.mosque_data)
+      if (data.imam_data) setImamData(data.imam_data)
       
       if (data.infobox) {
         setInfoboxTitle(data.infobox.title || '')
@@ -216,6 +219,7 @@ export default function EditArticlePage() {
           article_type: articleType,
           infobox: articleType === 'article' ? infoboxData : undefined,
           mosque_data: articleType === 'mosque' ? mosqueData : undefined,
+          imam_data: articleType === 'imam' ? imamData : undefined,
           author_name: authorName || undefined,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
@@ -320,11 +324,12 @@ export default function EditArticlePage() {
               <label className="block text-sm font-bold mb-2">Type d'article</label>
               <select
                 value={articleType}
-                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque')}
+                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque' | 'imam')}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="article">Article général</option>
                 <option value="mosque">Mosquée</option>
+                <option value="imam">Imam</option>
               </select>
             </div>
 
@@ -343,6 +348,11 @@ export default function EditArticlePage() {
             {/* Mosque Form */}
             {articleType === 'mosque' && (
               <MosqueForm mosqueData={mosqueData} onChange={setMosqueData} />
+            )}
+
+            {/* Imam Form */}
+            {articleType === 'imam' && (
+              <ImamForm imamData={imamData} onChange={setImamData} />
             )}
 
             {/* Infobox */}
