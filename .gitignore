@@ -33,3 +33,4 @@ coverage/
 *.pem
 .vercel
 .env*.local
+admin/.env.local.example
