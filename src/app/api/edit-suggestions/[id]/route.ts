@@ -50,8 +50,12 @@ export async function PATCH(
     }
 
     if (status === 'approved') {
-      // Apply suggested content to the article
-      await updateArticle(suggestion.article_slug, { content: suggestion.suggested_content })
+      // Apply all suggested changes to the article
+      const updates: Record<string, unknown> = { content: suggestion.suggested_content }
+      if (suggestion.suggested_title) updates.title = suggestion.suggested_title
+      if (suggestion.suggested_excerpt) updates.excerpt = suggestion.suggested_excerpt
+      if (suggestion.suggested_categories) updates.categories = suggestion.suggested_categories
+      await updateArticle(suggestion.article_slug, updates)
     }
 
     const updated = await updateEditSuggestionStatus(id, status)

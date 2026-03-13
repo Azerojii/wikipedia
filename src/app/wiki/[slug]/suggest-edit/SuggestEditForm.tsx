@@ -2,22 +2,44 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { Loader2 } from 'lucide-react'
+
+const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false })
 
 interface SuggestEditFormProps {
   slug: string
   articleTitle: string
   currentContent: string
+  currentExcerpt: string
+  currentCategories: string[]
+  allCategories: string[]
 }
 
-export default function SuggestEditForm({ slug, articleTitle, currentContent }: SuggestEditFormProps) {
+export default function SuggestEditForm({
+  slug,
+  articleTitle,
+  currentContent,
+  currentExcerpt,
+  currentCategories,
+  allCategories,
+}: SuggestEditFormProps) {
   const router = useRouter()
+  const [suggestedTitle, setSuggestedTitle] = useState(articleTitle)
+  const [suggestedExcerpt, setSuggestedExcerpt] = useState(currentExcerpt)
   const [suggestedContent, setSuggestedContent] = useState(currentContent)
+  const [suggestedCategories, setSuggestedCategories] = useState<string[]>(currentCategories)
   const [reason, setReason] = useState('')
   const [suggesterName, setSuggesterName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+
+  const toggleCategory = (cat: string) => {
+    setSuggestedCategories(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,6 +54,12 @@ export default function SuggestEditForm({ slug, articleTitle, currentContent }: 
           article_slug: slug,
           article_title: articleTitle,
           suggested_content: suggestedContent,
+          suggested_title: suggestedTitle !== articleTitle ? suggestedTitle : undefined,
+          suggested_excerpt: suggestedExcerpt !== currentExcerpt ? suggestedExcerpt : undefined,
+          suggested_categories:
+            JSON.stringify(suggestedCategories) !== JSON.stringify(currentCategories)
+              ? suggestedCategories
+              : undefined,
           reason: reason || undefined,
           suggester_name: suggesterName || undefined,
         }),
@@ -67,15 +95,53 @@ export default function SuggestEditForm({ slug, articleTitle, currentContent }: 
       )}
 
       <div>
-        <label className="block text-sm font-bold mb-1">
-          Contenu suggéré <span className="text-red-500">*</span>
-        </label>
+        <label className="block text-sm font-bold mb-1">Titre</label>
+        <input
+          type="text"
+          value={suggestedTitle}
+          onChange={(e) => setSuggestedTitle(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-1">Description / Extrait</label>
         <textarea
+          value={suggestedExcerpt}
+          onChange={(e) => setSuggestedExcerpt(e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-1">Catégories</label>
+        <div className="flex flex-wrap gap-2 mt-1">
+          {allCategories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => toggleCategory(cat)}
+              className={`px-3 py-1 rounded-full text-sm border transition ${
+                suggestedCategories.includes(cat)
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-gray-700 border-gray-300 hover:border-primary'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-1">
+          Contenu <span className="text-red-500">*</span>
+        </label>
+        <QuillEditor
           value={suggestedContent}
-          onChange={(e) => setSuggestedContent(e.target.value)}
-          required
-          rows={16}
-          className="w-full px-3 py-2 border border-gray-300 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+          onChange={setSuggestedContent}
+          placeholder="Contenu de l'article..."
         />
       </div>
 

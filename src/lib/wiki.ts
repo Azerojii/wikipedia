@@ -69,6 +69,9 @@ export interface WikiEditSuggestion {
   article_slug: string
   article_title: string
   suggested_content: string
+  suggested_title?: string | null
+  suggested_excerpt?: string | null
+  suggested_categories?: string[] | null
   reason?: string | null
   suggester_name?: string | null
   status: string
@@ -353,6 +356,9 @@ export async function createEditSuggestion(data: {
   article_slug: string
   article_title: string
   suggested_content: string
+  suggested_title?: string
+  suggested_excerpt?: string
+  suggested_categories?: string[]
   reason?: string
   suggester_name?: string
 }): Promise<WikiEditSuggestion | null> {

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getArticle } from '@/lib/wiki'
+import { getArticle, getAllCategories } from '@/lib/wiki'
 import WikiHeader from '@/components/WikiHeader'
 import WikiFooter from '@/components/WikiFooter'
 import WikiSidebar from '@/components/WikiSidebar'
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function SuggestEditPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const article = await getArticle(slug)
+  const [article, categories] = await Promise.all([getArticle(slug), getAllCategories()])
 
   if (!article) notFound()
 
@@ -23,7 +23,14 @@ export default async function SuggestEditPage({ params }: { params: Promise<{ sl
           <p className="text-gray-500 text-sm mb-6">Article : <span className="font-medium text-gray-700">{article.title}</span></p>
 
           <div className="bg-wiki-bg border border-wiki-border rounded-lg p-6">
-            <SuggestEditForm slug={slug} articleTitle={article.title} currentContent={article.content} />
+            <SuggestEditForm
+              slug={slug}
+              articleTitle={article.title}
+              currentContent={article.content}
+              currentExcerpt={article.excerpt || ''}
+              currentCategories={article.categories || []}
+              allCategories={categories.map(c => c.name)}
+            />
           </div>
         </main>
       </div>

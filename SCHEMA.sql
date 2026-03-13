@@ -108,6 +108,12 @@ create policy "service role full access on wiki_edit_suggestions"
   using (true)
   with check (true);
 
+-- ─── Feature 3b: Extended edit suggestions (title, excerpt, categories) ─────
+
+ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_title text;
+ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_excerpt text;
+ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_categories text[];
+
 -- ─── Feature 10: Full-text search ────────────────────────────────────────────
 
 ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS search_vector tsvector

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { article_slug, article_title, suggested_content, reason, suggester_name } = body
+    const { article_slug, article_title, suggested_content, suggested_title, suggested_excerpt, suggested_categories, reason, suggester_name } = body
 
     if (!article_slug || !article_title || !suggested_content) {
       return NextResponse.json(
@@ -29,6 +29,9 @@ export async function POST(request: Request) {
       article_slug,
       article_title,
       suggested_content,
+      suggested_title: suggested_title || undefined,
+      suggested_excerpt: suggested_excerpt || undefined,
+      suggested_categories: suggested_categories || undefined,
       reason: reason || undefined,
       suggester_name: suggester_name || undefined,
     })
