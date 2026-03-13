@@ -33,13 +33,17 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
               <div className="flex justify-between items-start">
                 <div className="flex items-start gap-3 flex-1">
                   {article.image_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={article.image_url}
                       alt={article.title}
-                      className="w-16 h-12 rounded object-cover flex-shrink-0 border border-gray-200"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="w-16 h-16 rounded object-cover flex-shrink-0 border border-gray-200"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                     />
                   )}
-                <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-bold text-primary hover:underline">
                       {article.title}

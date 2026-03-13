@@ -47,7 +47,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
 
-        <main className="flex-1 px-6 py-4 max-w-[860px]">
+        <main className="flex-1 px-4 md:px-6 py-4 max-w-[860px] min-w-0">
           {/* Breadcrumbs */}
           <div className="text-sm text-gray-600 mb-4">
             <Link href="/" className="text-primary hover:underline">
@@ -68,8 +68,8 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
             {article.title}
           </h1>
 
-          <div className="flex gap-6">
-            <div className="flex-1">
+          <div className="flex flex-col-reverse lg:flex-row gap-6">
+            <div className="flex-1 min-w-0">
               <MarkdownRenderer content={article.content} />
 
               {/* Footer */}
@@ -96,7 +96,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
             </div>
 
             {/* Right Sidebar with Infobox and TOC */}
-            <aside className="w-64 flex-shrink-0">
+            <aside className="w-full lg:w-64 lg:flex-shrink-0">
               {article.article_type === 'mosque' && article.mosque_data ? (
                 <MosqueInfobox mosque={article.mosque_data} />
               ) : article.article_type === 'imam' && article.imam_data ? (

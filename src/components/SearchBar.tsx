@@ -12,7 +12,7 @@ interface Article {
   category: string
 }
 
-export default function SearchBar() {
+export default function SearchBar({ className }: { className?: string }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Article[]>([])
   const [articles, setArticles] = useState<Article[]>([])
@@ -79,7 +79,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div ref={searchRef} className="relative w-64">
+    <div ref={searchRef} className={`relative ${className ?? 'w-64'}`}>
       <div className="relative">
         <input
           type="text"

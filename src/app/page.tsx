@@ -28,22 +28,22 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-gray-200">
       <WikiHeader />
-      <div className="max-w-4xl mx-auto px-4 py-16">
+      <div className="max-w-4xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
             <Image
               src="/logo.png"
               alt="Musulmans Français Logo"
-              width={200}
-              height={200}
+              width={80}
+              height={80}
               className="object-contain"
             />
-            <h1 className="text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">Musulmans Français</h1>
             <Image
               src="/logofrance.png"
               alt="France"
-              width={120}
-              height={120}
+              width={60}
+              height={60}
               className="object-contain"
             />
           </div>
@@ -56,7 +56,7 @@ export default async function Home() {
 
         <div className="bg-wiki-bg border border-wiki-border rounded-lg p-8 mb-8">
           <div className="relative mb-6">
-            <SearchBar />
+            <SearchBar className="w-full" />
           </div>
         </div>
 
