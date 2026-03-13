@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getArticle, generateTableOfContents } from '@/lib/wiki'
 import WikiHeader from '@/components/WikiHeader'
+import WikiFooter from '@/components/WikiFooter'
 import WikiSidebar from '@/components/WikiSidebar'
 import TableOfContents from '@/components/TableOfContents'
 import Infobox from '@/components/Infobox'
@@ -117,6 +118,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
           </div>
         </main>
       </div>
+      <WikiFooter />
     </div>
   )
 }

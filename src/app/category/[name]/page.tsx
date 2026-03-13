@@ -1,16 +1,11 @@
 import Link from 'next/link'
 import WikiHeader from '@/components/WikiHeader'
+import WikiFooter from '@/components/WikiFooter'
+import CategoryArticleList from '@/components/CategoryArticleList'
 import { getArticlesByCategory } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-
-function isNewArticle(date: string): boolean {
-  const articleDate = new Date(date)
-  const threeDaysAgo = new Date()
-  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
-  return articleDate >= threeDaysAgo
-}
 
 export default async function CategoryPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
@@ -27,33 +22,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ name:
           {articles.length} article(s) dans cette catégorie
         </p>
 
-        <div className="space-y-4">
-          {articles.length > 0 ? (
-            articles.map((article) => (
-              <Link
-                key={article.slug}
-                href={`/wiki/${article.slug}`}
-                className="block p-6 bg-wiki-bg border border-wiki-border rounded-lg hover:bg-gray-100 transition"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-primary mb-2">{article.title}</h3>
-                    <p className="text-gray-600">{article.excerpt}</p>
-                  </div>
-                  {isNewArticle(article.updated_at) && (
-                    <span className="ml-4 px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full whitespace-nowrap">
-                      Nouveaux articles
-                    </span>
-                  )}
-                </div>
-              </Link>
-            ))
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-600">Aucun article dans cette catégorie.</p>
-            </div>
-          )}
-        </div>
+        <CategoryArticleList articles={articles} />
 
         <div className="mt-8">
           <Link href="/" className="text-primary hover:underline">
@@ -61,6 +30,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ name:
           </Link>
         </div>
       </div>
+      <WikiFooter />
     </main>
   )
 }

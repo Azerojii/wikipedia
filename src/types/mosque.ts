@@ -3,6 +3,12 @@ export interface MosqueFounder {
   nationality?: string
 }
 
+export interface MosqueImam {
+  name: string
+  from?: string
+  to?: string
+}
+
 export interface CommitteeMember {
   name: string
   nationality?: string
@@ -27,6 +33,9 @@ export interface MosqueData {
   currentCommittee?: CommitteeMember[]
   facilities?: string[]
   gallery?: { src: string; caption: string }[]
+  region?: string
+  currentImam?: string
+  previousImams?: MosqueImam[]
 }
 
 export interface ImamData {
@@ -38,5 +47,8 @@ export interface ImamData {
   isAlive?: boolean
   rank?: string
   nationality?: string
+  region?: string
+  currentMosque?: string
+  previousMosques?: { name: string; from?: string; to?: string }[]
   customFields?: { label: string; value: string }[]
 }

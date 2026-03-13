@@ -1,7 +1,8 @@
 'use client'
 
 import { Plus, X } from 'lucide-react'
-import type { MosqueData, MosqueFounder, CommitteeMember } from '@/types/mosque'
+import type { MosqueData, MosqueFounder, CommitteeMember, MosqueImam } from '@/types/mosque'
+import { FRENCH_REGIONS } from '@/lib/regions'
 
 interface MosqueFormProps {
   mosqueData: MosqueData
@@ -50,6 +51,19 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
   }
   const removeCurrentMember = (idx: number) => {
     onChange({ ...mosqueData, currentCommittee: (mosqueData.currentCommittee || []).filter((_, i) => i !== idx) })
+  }
+
+  // Previous Imams
+  const addPreviousImam = () => {
+    onChange({ ...mosqueData, previousImams: [...(mosqueData.previousImams || []), { name: '' }] })
+  }
+  const updatePreviousImam = (idx: number, key: keyof MosqueImam, val: string) => {
+    const updated = [...(mosqueData.previousImams || [])]
+    updated[idx] = { ...updated[idx], [key]: val }
+    onChange({ ...mosqueData, previousImams: updated })
+  }
+  const removePreviousImam = (idx: number) => {
+    onChange({ ...mosqueData, previousImams: (mosqueData.previousImams || []).filter((_, i) => i !== idx) })
   }
 
   // Facilities
@@ -141,6 +155,20 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
           className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
           placeholder="Paris, France"
         />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium mb-1">Région (France)</label>
+        <select
+          value={mosqueData.region || ''}
+          onChange={(e) => update('region', e.target.value || undefined)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+        >
+          <option value="">— Sélectionner une région —</option>
+          {FRENCH_REGIONS.map((r) => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -359,6 +387,65 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
           >
             <Plus size={12} />
             Ajouter un membre actuel
+          </button>
+        </div>
+      </div>
+
+      {/* Current Imam */}
+      <div>
+        <label className="block text-xs font-medium mb-1">Imam actuel</label>
+        <input
+          type="text"
+          value={mosqueData.currentImam || ''}
+          onChange={(e) => update('currentImam', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+          placeholder="Nom de l'imam actuel"
+        />
+      </div>
+
+      {/* Previous Imams */}
+      <div>
+        <label className="block text-xs font-medium mb-2">Imams précédents</label>
+        <div className="space-y-2">
+          {(mosqueData.previousImams || []).map((imam, idx) => (
+            <div key={idx} className="flex gap-2 flex-wrap">
+              <input
+                type="text"
+                value={imam.name}
+                onChange={(e) => updatePreviousImam(idx, 'name', e.target.value)}
+                className="flex-1 min-w-[140px] px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nom"
+              />
+              <input
+                type="text"
+                value={imam.from || ''}
+                onChange={(e) => updatePreviousImam(idx, 'from', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="De (année)"
+              />
+              <input
+                type="text"
+                value={imam.to || ''}
+                onChange={(e) => updatePreviousImam(idx, 'to', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="À (année)"
+              />
+              <button
+                type="button"
+                onClick={() => removePreviousImam(idx)}
+                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addPreviousImam}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+          >
+            <Plus size={12} />
+            Ajouter un imam précédent
           </button>
         </div>
       </div>

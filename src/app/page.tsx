@@ -3,6 +3,7 @@ import Image from 'next/image'
 import SearchBar from '@/components/SearchBar'
 import WikiHeader from '@/components/WikiHeader'
 import AllArticlesList from '@/components/AllArticlesList'
+import WikiFooter from '@/components/WikiFooter'
 import { getAllArticles, getAllCategories } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
@@ -38,6 +39,13 @@ export default async function Home() {
               className="object-contain"
             />
             <h1 className="text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
+            <Image
+              src="/logofrance.png"
+              alt="France"
+              width={120}
+              height={120}
+              className="object-contain"
+            />
           </div>
           <p className="text-xl text-gray-600">L'encyclopédie libre sur la Grande Mosquée de Paris</p>
           <p className="text-lg text-gray-700 mt-4 italic">
@@ -82,6 +90,7 @@ export default async function Home() {
           <p>Musulmans Français contient {articles.length} article(s) sur la Grande Mosquée de Paris</p>
         </div>
       </div>
+      <WikiFooter />
     </main>
   )
 }

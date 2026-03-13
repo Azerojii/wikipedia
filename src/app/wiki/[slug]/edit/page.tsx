@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
-import RichTextEditor from '@/components/RichTextEditor'
+import QuillEditor from '@/components/QuillEditor'
 import { Loader2, Plus } from 'lucide-react'
 import MosqueForm from '@/components/MosqueForm'
 import ImamForm from '@/components/ImamForm'
@@ -21,7 +21,6 @@ export default function EditArticlePage() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Histoire')
   const [content, setContent] = useState('')
-  const [useRichText, setUseRichText] = useState(true)
   const [infoboxTitle, setInfoboxTitle] = useState('')
   const [infoboxColor, setInfoboxColor] = useState('#067782')
   const [infoboxImage, setInfoboxImage] = useState('')
@@ -38,7 +37,6 @@ export default function EditArticlePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     fetchArticle()
@@ -148,24 +146,6 @@ export default function EditArticlePage() {
     const updated = [...youtubeVideos]
     updated[index] = value
     setYoutubeVideos(updated)
-  }
-
-  const handleImageInsert = (markdown: string) => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      const newContent = content.substring(0, start) + markdown + content.substring(end)
-      setContent(newContent)
-      
-      // Set cursor position after inserted markdown
-      setTimeout(() => {
-        textarea.focus()
-        textarea.setSelectionRange(start + markdown.length, start + markdown.length)
-      }, 0)
-    } else {
-      setContent(content + '\n' + markdown)
-    }
   }
 
   const handleInfoboxImageAutoFill = ({ src, caption }: { src: string; caption?: string }) => {
@@ -548,70 +528,14 @@ export default function EditArticlePage() {
 
             {/* Content */}
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold">
-                  Contenu de l'article <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center gap-4">
-                  <CountryEmojiPicker 
-                    onSelect={(emoji) => {
-                      if (useRichText) {
-                        setContent(content + emoji)
-                      } else if (textareaRef.current) {
-                        const start = textareaRef.current.selectionStart
-                        const end = textareaRef.current.selectionEnd
-                        const newContent = content.substring(0, start) + emoji + content.substring(end)
-                        setContent(newContent)
-                        setTimeout(() => {
-                          textareaRef.current?.focus()
-                          textareaRef.current?.setSelectionRange(start + emoji.length, start + emoji.length)
-                        }, 0)
-                      }
-                    }}
-                  />
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={useRichText}
-                      onChange={(e) => setUseRichText(e.target.checked)}
-                      className="rounded"
-                    />
-                    <span>Éditeur enrichi</span>
-                  </label>
-                </div>
-              </div>
-              {!useRichText && (
-                <div className="text-xs text-gray-600 mb-2">
-                  Utilisez la syntaxe Markdown. Pour les liens internes, utilisez: [[Nom de l'article]]
-                </div>
-              )}
-              
-              {useRichText ? (
-                <RichTextEditor
-                  value={content}
-                  onChange={setContent}
-                  placeholder="Commencez à écrire votre article ici..."
-                />
-              ) : (
-                <textarea
-                  ref={textareaRef}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                  rows={20}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
-                  placeholder="# Titre de l'article
-
-## Introduction
-
-Votre contenu ici...
-
-## Voir aussi
-
-- [[Article lié 1]]
-- [[Article lié 2]]"
-                />
-              )}
+              <label className="block text-sm font-bold mb-2">
+                Contenu de l'article <span className="text-red-500">*</span>
+              </label>
+              <QuillEditor
+                value={content}
+                onChange={setContent}
+                placeholder="Commencez à écrire votre article ici..."
+              />
             </div>
 
             {/* Submit Button */}

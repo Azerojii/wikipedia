@@ -86,6 +86,12 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{mosque.architect}</td>
             </tr>
           )}
+          {mosque.region && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Région</td>
+              <td className="py-1.5 px-3 align-top">{mosque.region}</td>
+            </tr>
+          )}
         </tbody>
       </table>
 
@@ -159,6 +165,49 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
                     )}
                     {member.from && (
                       <div className="text-xs text-[#0645ad]">Depuis {member.from}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Current Imam */}
+      {mosque.currentImam && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Imam actuel
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr className="border-t border-[#a2a9b1]">
+                <td className="py-1.5 px-3 align-top font-medium">{mosque.currentImam}</td>
+              </tr>
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Previous Imams */}
+      {mosque.previousImams && mosque.previousImams.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Imams précédents
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.previousImams.map((imam, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{imam.name}</div>
+                    {(imam.from || imam.to) && (
+                      <div className="text-xs text-[#0645ad]">
+                        {imam.from && `De ${imam.from}`}
+                        {imam.from && imam.to && ' — '}
+                        {imam.to && `À ${imam.to}`}
+                      </div>
                     )}
                   </td>
                 </tr>

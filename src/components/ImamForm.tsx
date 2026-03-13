@@ -2,6 +2,7 @@
 
 import { Plus, X } from 'lucide-react'
 import type { ImamData } from '@/types/mosque'
+import { FRENCH_REGIONS } from '@/lib/regions'
 
 interface ImamFormProps {
   imamData: ImamData
@@ -11,6 +12,18 @@ interface ImamFormProps {
 export default function ImamForm({ imamData, onChange }: ImamFormProps) {
   const update = (field: keyof ImamData, value: unknown) => {
     onChange({ ...imamData, [field]: value })
+  }
+
+  const addPreviousMosque = () => {
+    onChange({ ...imamData, previousMosques: [...(imamData.previousMosques || []), { name: '' }] })
+  }
+  const updatePreviousMosque = (idx: number, key: 'name' | 'from' | 'to', val: string) => {
+    const updated = [...(imamData.previousMosques || [])]
+    updated[idx] = { ...updated[idx], [key]: val }
+    onChange({ ...imamData, previousMosques: updated })
+  }
+  const removePreviousMosque = (idx: number) => {
+    onChange({ ...imamData, previousMosques: (imamData.previousMosques || []).filter((_, i) => i !== idx) })
   }
 
   const addCustomField = () => {
@@ -127,6 +140,20 @@ export default function ImamForm({ imamData, onChange }: ImamFormProps) {
         </div>
       </div>
 
+      <div>
+        <label className="block text-xs font-medium mb-1">Région (France)</label>
+        <select
+          value={imamData.region || ''}
+          onChange={(e) => update('region', e.target.value || undefined)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+        >
+          <option value="">— Sélectionner une région —</option>
+          {FRENCH_REGIONS.map((r) => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -136,6 +163,65 @@ export default function ImamForm({ imamData, onChange }: ImamFormProps) {
           className="rounded"
         />
         <label htmlFor="isAlive" className="text-xs font-medium">Toujours en vie</label>
+      </div>
+
+      {/* Current Mosque */}
+      <div>
+        <label className="block text-xs font-medium mb-1">Mosquée actuelle</label>
+        <input
+          type="text"
+          value={imamData.currentMosque || ''}
+          onChange={(e) => update('currentMosque', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+          placeholder="Nom de la mosquée actuelle"
+        />
+      </div>
+
+      {/* Previous Mosques */}
+      <div>
+        <label className="block text-xs font-medium mb-2">Mosquées précédentes</label>
+        <div className="space-y-2">
+          {(imamData.previousMosques || []).map((mosque, idx) => (
+            <div key={idx} className="flex gap-2 flex-wrap">
+              <input
+                type="text"
+                value={mosque.name}
+                onChange={(e) => updatePreviousMosque(idx, 'name', e.target.value)}
+                className="flex-1 min-w-[140px] px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="Nom de la mosquée"
+              />
+              <input
+                type="text"
+                value={mosque.from || ''}
+                onChange={(e) => updatePreviousMosque(idx, 'from', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="De (année)"
+              />
+              <input
+                type="text"
+                value={mosque.to || ''}
+                onChange={(e) => updatePreviousMosque(idx, 'to', e.target.value)}
+                className="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"
+                placeholder="À (année)"
+              />
+              <button
+                type="button"
+                onClick={() => removePreviousMosque(idx)}
+                className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addPreviousMosque}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded text-xs"
+          >
+            <Plus size={12} />
+            Ajouter une mosquée précédente
+          </button>
+        </div>
       </div>
 
       {/* Custom Fields */}

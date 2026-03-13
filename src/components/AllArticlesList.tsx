@@ -31,11 +31,32 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
               className="block p-4 rounded hover:bg-gray-100 transition border-b border-gray-200 last:border-b-0"
             >
               <div className="flex justify-between items-start">
+                <div className="flex items-start gap-3 flex-1">
+                  {article.image_url && (
+                    <img
+                      src={article.image_url}
+                      alt={article.title}
+                      className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200"
+                    />
+                  )}
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-primary hover:underline">
-                    {article.title}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-primary hover:underline">
+                      {article.title}
+                    </h3>
+                    {article.article_type === 'mosque' && (
+                      <span className="px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full">
+                        🕌 Mosquée
+                      </span>
+                    )}
+                    {article.article_type === 'imam' && (
+                      <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full">
+                        👤 Imam
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-600 mt-1">{article.excerpt}</p>
+                </div>
                 </div>
                 <span className="text-xs text-gray-500 ml-4 flex-shrink-0 mt-1">
                   {article.categories?.[0] ?? ''}

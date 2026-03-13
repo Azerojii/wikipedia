@@ -50,6 +50,18 @@ export default function ImamInfobox({ imam }: ImamInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{imam.nationality}</td>
             </tr>
           )}
+          {imam.region && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Région</td>
+              <td className="py-1.5 px-3 align-top">{imam.region}</td>
+            </tr>
+          )}
+          {imam.currentMosque && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Mosquée actuelle</td>
+              <td className="py-1.5 px-3 align-top">{imam.currentMosque}</td>
+            </tr>
+          )}
           {imam.birthDate && (
             <tr className="border-t border-[#a2a9b1]">
               <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Naissance</td>
@@ -69,6 +81,33 @@ export default function ImamInfobox({ imam }: ImamInfoboxProps) {
           ) : null}
         </tbody>
       </table>
+
+      {/* Previous Mosques */}
+      {imam.previousMosques && imam.previousMosques.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Mosquées précédentes
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {imam.previousMosques.map((mosque, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{mosque.name}</div>
+                    {(mosque.from || mosque.to) && (
+                      <div className="text-xs text-[#0645ad]">
+                        {mosque.from && `De ${mosque.from}`}
+                        {mosque.from && mosque.to && ' — '}
+                        {mosque.to && `À ${mosque.to}`}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
 
       {/* Custom Fields */}
       {imam.customFields && imam.customFields.length > 0 && (
