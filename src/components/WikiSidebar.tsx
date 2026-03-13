@@ -63,16 +63,6 @@ export default function WikiSidebar() {
                 Soumettre un article
               </Link>
             </li>
-            <li>
-              <Link href="/admin" className="text-gray-700 hover:text-primary">
-                Administration
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/submissions" className="text-gray-700 hover:text-primary">
-                Soumissions en attente
-              </Link>
-            </li>
           </ul>
         </div>
       </nav>

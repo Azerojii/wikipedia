@@ -29,9 +29,6 @@ export default function WikiHeader() {
               <Link href="/submit" className="hover:text-primary transition-colors font-medium">
                 Soumettre
               </Link>
-              <Link href="/admin" className="hover:text-primary transition-colors font-medium">
-                Admin
-              </Link>
             </nav>
           </div>
 
