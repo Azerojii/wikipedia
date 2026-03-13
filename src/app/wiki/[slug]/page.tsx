@@ -8,10 +8,8 @@ import TableOfContents from '@/components/TableOfContents'
 import Infobox from '@/components/Infobox'
 import MosqueInfobox from '@/components/MosqueInfobox'
 import ImamInfobox from '@/components/ImamInfobox'
-import EditButton from '@/components/EditButton'
 import SuggestEditButton from '@/components/SuggestEditButton'
 import PrintButton from '@/components/PrintButton'
-import DeleteArticleButton from '@/components/DeleteArticleButton'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import YouTubeVideos from '@/components/YouTubeVideos'
 
@@ -62,10 +60,8 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
           </div>
 
           <div className="flex gap-2 flex-wrap mb-4">
-            <EditButton slug={slug} />
             <SuggestEditButton slug={slug} currentContent={article.content} articleTitle={article.title} />
             <PrintButton />
-            <DeleteArticleButton slug={slug} />
           </div>
 
           <h1 className="text-4xl font-serif font-bold border-b border-gray-300 pb-2 mb-4">

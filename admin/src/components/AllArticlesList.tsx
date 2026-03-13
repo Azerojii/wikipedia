@@ -36,7 +36,7 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                     <img
                       src={article.image_url}
                       alt={article.title}
-                      className="w-16 h-12 rounded object-cover flex-shrink-0 border border-gray-200"
+                      className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200"
                     />
                   )}
                 <div className="flex-1">
