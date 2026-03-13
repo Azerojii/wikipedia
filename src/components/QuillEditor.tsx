@@ -1,16 +1,13 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import 'react-quill/dist/quill.snow.css'
+import { useEffect, useRef } from 'react'
+import 'quill/dist/quill.snow.css'
 
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => (
-    <div className="border border-gray-300 rounded h-64 flex items-center justify-center text-gray-400">
-      Chargement de l&apos;éditeur...
-    </div>
-  ),
-})
+interface QuillEditorProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+}
 
 const modules = {
   toolbar: [
@@ -27,30 +24,58 @@ const modules = {
 const formats = [
   'header',
   'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet',
+  'list',
   'blockquote', 'code-block',
   'link', 'image',
   'align',
 ]
 
-interface QuillEditorProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-}
-
 export default function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const quillRef = useRef<InstanceType<typeof import('quill').default> | null>(null)
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+
+  useEffect(() => {
+    if (!containerRef.current || quillRef.current) return
+
+    // Quill must be imported dynamically (client-only)
+    import('quill').then(({ default: Quill }) => {
+      if (!containerRef.current || quillRef.current) return
+
+      const quill = new Quill(containerRef.current, {
+        theme: 'snow',
+        placeholder: placeholder || 'Commencez à écrire votre article ici...',
+        modules,
+        formats,
+      })
+
+      quillRef.current = quill
+
+      // Set initial value
+      if (value) {
+        quill.clipboard.dangerouslyPasteHTML(value)
+      }
+
+      quill.on('text-change', () => {
+        onChangeRef.current(quill.root.innerHTML)
+      })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Sync external value changes (e.g. reset)
+  useEffect(() => {
+    const quill = quillRef.current
+    if (!quill) return
+    if (quill.root.innerHTML !== value) {
+      quill.clipboard.dangerouslyPasteHTML(value || '')
+    }
+  }, [value])
+
   return (
     <div className="quill-wrapper">
-      <ReactQuill
-        theme="snow"
-        value={value}
-        onChange={onChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder || 'Commencez à écrire votre article ici...'}
-        style={{ minHeight: '400px' }}
-      />
+      <div ref={containerRef} style={{ minHeight: '400px' }} />
       <style jsx global>{`
         .quill-wrapper .ql-container {
           font-size: 16px;

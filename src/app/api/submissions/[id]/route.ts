@@ -40,7 +40,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { action, title, content, excerpt, article_type, infobox, mosque_data, image_url, categories, author_name } = body
+    const { action, title, content, excerpt, article_type, infobox, mosque_data, imam_data, image_url, categories, author_name } = body
     const { id } = await params
 
     const submission = await getSubmission(id)
@@ -53,7 +53,9 @@ export async function PUT(
         return NextResponse.json({ error: 'Title and content are required to approve' }, { status: 400 })
       }
 
-      const slug = title.trim().replace(/\s+/g, '_')
+      const slugify = (s: string) =>
+        s.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
+      const slug = slugify(title)
 
       // Publish to wiki_articles
       const article = await createArticle({
@@ -64,6 +66,7 @@ export async function PUT(
         article_type: article_type || submission.article_type || 'article',
         infobox: infobox || submission.infobox || null,
         mosque_data: mosque_data || submission.mosque_data || null,
+        imam_data: imam_data || submission.imam_data || null,
         image_url: image_url || submission.image_url || null,
         categories: categories || submission.categories || [],
         author_name: author_name || submission.author_name || null,

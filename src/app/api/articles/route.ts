@@ -23,7 +23,9 @@ export async function POST(request: Request) {
       )
     }
 
-    const slug = title.trim().replace(/\s+/g, '_')
+    const slugify = (s: string) =>
+      s.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
+    const slug = slugify(title)
 
     const article = await createArticle({
       slug,

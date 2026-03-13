@@ -54,6 +54,8 @@ export default function SubmitArticlePage() {
     }
   }
 
+  const isQuillEmpty = (html: string) => !html || html.replace(/<(.|\n)*?>/g, '').trim() === '' || html === '<p><br></p>'
+
   const addInfoboxSection = () => {
     setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])
   }
@@ -550,7 +552,7 @@ export default function SubmitArticlePage() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !title || !content || !submitterName || !submitterEmail}
+                disabled={isSubmitting || !title || isQuillEmpty(content) || !submitterName || !submitterEmail}
                 className="px-6 py-3 bg-primary text-white rounded hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
               >
                 {isSubmitting ? (
