@@ -5,25 +5,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, PenLine } from 'lucide-react'
 import SearchBar from './SearchBar'
-import UserMenu from './UserMenu'
 
 export default function WikiHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2.5">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-8">
             <Link href="/" className="flex items-center gap-2 md:gap-3 group">
               <Image
                 src="/logo.png"
                 alt="Musulmans Français Logo"
-                width={40}
-                height={40}
+                width={52}
+                height={52}
                 className="object-contain"
               />
-              <div className="text-lg md:text-xl font-bold font-serif text-primary group-hover:text-primary/80 transition-colors">Musulmans Français</div>
+              <div className="text-lg md:text-2xl font-bold font-serif text-primary group-hover:text-primary/80 transition-colors">Musulmans Français</div>
             </Link>
 
             <nav className="hidden md:flex items-center gap-4 text-sm" aria-label="Navigation principale">
@@ -32,7 +31,7 @@ export default function WikiHeader() {
               </Link>
               <Link
                 href="/submit"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg hover:opacity-90 transition-all text-sm font-medium shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-white rounded-lg hover:opacity-90 transition-all text-sm font-medium shadow-sm"
                 title="Ajouter un article"
               >
                 <PenLine size={14} />
@@ -43,9 +42,8 @@ export default function WikiHeader() {
 
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden sm:block">
-              <SearchBar className="w-40 md:w-56" />
+              <SearchBar className="w-44 md:w-64" />
             </div>
-            <UserMenu />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"

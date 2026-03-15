@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function WikiFooter() {
   return (
     <footer className="border-t border-gray-200 bg-white mt-12 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             <h3 className="text-xs font-bold uppercase text-gray-400 tracking-wider mb-3">Réseaux sociaux</h3>

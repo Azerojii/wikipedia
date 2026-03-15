@@ -33,7 +33,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ name:
   return (
     <main className="min-h-screen bg-[#f5f6f8]">
       <WikiHeader />
-      <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
         <nav className="text-sm text-gray-500 mb-4" aria-label="Fil d'Ariane">
           <Link href="/" className="text-primary hover:underline">Accueil</Link>
           <span className="mx-1.5 text-gray-300">›</span>

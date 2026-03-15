@@ -18,7 +18,7 @@ export default async function SuggestEditPage({ params }: { params: Promise<{ sl
       <WikiHeader />
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
-        <main className="flex-1 px-4 md:px-6 py-6 max-w-[860px]">
+        <main className="flex-1 px-4 md:px-6 py-6 max-w-4xl">
           <h1 className="text-3xl font-serif font-bold mb-1">Suggérer une modification</h1>
           <p className="text-gray-500 text-sm mb-6">Article : <span className="font-medium text-gray-700">{article.title}</span></p>
 

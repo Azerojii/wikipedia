@@ -192,13 +192,13 @@ export default function SubmitArticlePage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#f5f6f8]">
         <WikiHeader />
 
         <div className="flex max-w-[1400px] mx-auto">
           <WikiSidebar />
 
-          <main className="flex-1 px-4 md:px-8 py-6 max-w-[860px]">
+          <main className="flex-1 min-w-0 bg-white border-x border-gray-100 px-6 md:px-10 lg:px-14 py-6">
             <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
               <h1 className="text-3xl font-serif font-bold text-green-800 mb-4">
                 Soumission réussie !
@@ -218,13 +218,13 @@ export default function SubmitArticlePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#f5f6f8]">
       <WikiHeader />
 
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
 
-        <main className="flex-1 px-4 md:px-8 py-6 max-w-[860px]">
+        <main className="flex-1 min-w-0 bg-white border-x border-gray-100 px-6 md:px-10 lg:px-14 py-6">
           <h1 className="text-3xl md:text-4xl font-serif font-bold border-b border-gray-200 pb-3 mb-6">
             Soumettre un article
           </h1>

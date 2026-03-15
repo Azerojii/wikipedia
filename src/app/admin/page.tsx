@@ -166,7 +166,7 @@ export default function AdminPage() {
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
         
-        <main className="flex-1 px-6 py-4 max-w-[860px]">
+        <main className="flex-1 px-6 py-4 max-w-4xl">
           <div className="mb-6">
             <h1 className="text-4xl font-serif font-bold border-b border-gray-300 pb-2 mb-4">
               Administration

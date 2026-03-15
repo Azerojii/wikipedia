@@ -190,7 +190,7 @@ function CreateArticleForm() {
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
         
-        <main className="flex-1 px-6 py-4 max-w-[860px]">
+        <main className="flex-1 px-6 py-4 max-w-4xl">
           <h1 className="text-4xl font-serif font-bold border-b border-gray-300 pb-2 mb-6">
             Créer un nouvel article
           </h1>
