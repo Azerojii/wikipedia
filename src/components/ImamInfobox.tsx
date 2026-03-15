@@ -56,6 +56,18 @@ export default function ImamInfobox({ imam }: ImamInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{imam.region}</td>
             </tr>
           )}
+          {imam.department && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Département</td>
+              <td className="py-1.5 px-3 align-top">{imam.department}</td>
+            </tr>
+          )}
+          {imam.commune && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Commune</td>
+              <td className="py-1.5 px-3 align-top">{imam.commune}</td>
+            </tr>
+          )}
           {imam.currentMosque && (
             <tr className="border-t border-[#a2a9b1]">
               <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Mosquée actuelle</td>

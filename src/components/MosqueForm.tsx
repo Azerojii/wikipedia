@@ -2,7 +2,7 @@
 
 import { Plus, X } from 'lucide-react'
 import type { MosqueData, MosqueFounder, CommitteeMember, MosqueImam } from '@/types/mosque'
-import { FRENCH_REGIONS } from '@/lib/regions'
+import LocationSelector from './LocationSelector'
 
 interface MosqueFormProps {
   mosqueData: MosqueData
@@ -157,19 +157,14 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
         />
       </div>
 
-      <div>
-        <label className="block text-xs font-medium mb-1">Région (France)</label>
-        <select
-          value={mosqueData.region || ''}
-          onChange={(e) => update('region', e.target.value || undefined)}
-          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-        >
-          <option value="">— Sélectionner une région —</option>
-          {FRENCH_REGIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </select>
-      </div>
+      <LocationSelector
+        region={mosqueData.region}
+        department={mosqueData.department}
+        commune={mosqueData.commune}
+        onRegionChange={(v) => update('region', v)}
+        onDepartmentChange={(v) => update('department', v)}
+        onCommuneChange={(v) => update('commune', v)}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div>

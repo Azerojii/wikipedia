@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import SearchBar from '@/components/SearchBar'
 import WikiHeader from '@/components/WikiHeader'
 import AllArticlesList from '@/components/AllArticlesList'
 import WikiFooter from '@/components/WikiFooter'
+import { Plus } from 'lucide-react'
 import { getAllArticles, getAllCategories } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
@@ -34,16 +34,16 @@ export default async function Home() {
             <Image
               src="/logo.png"
               alt="Musulmans Français Logo"
-              width={80}
-              height={80}
+              width={100}
+              height={100}
               className="object-contain"
             />
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">Musulmans Français</h1>
             <Image
               src="/logofrance.png"
               alt="France"
-              width={60}
-              height={60}
+              width={80}
+              height={80}
               className="object-contain"
             />
           </div>
@@ -54,13 +54,17 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="bg-wiki-bg border border-wiki-border rounded-lg p-8 mb-8">
-          <div className="relative mb-6">
-            <SearchBar className="w-full" />
-          </div>
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-2xl font-serif font-bold">Catégories</h2>
+          <Link
+            href="/submit"
+            className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary text-white rounded text-xs font-medium hover:opacity-90 transition-colors"
+            title="Ajouter un article"
+          >
+            <Plus size={14} />
+            Ajouter
+          </Link>
         </div>
-
-        <h2 className="text-2xl font-serif font-bold mb-4">Catégories</h2>
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {categoryData.length > 0 ? (
             categoryData.map((category) => (

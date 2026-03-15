@@ -114,6 +114,16 @@ ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_title text;
 ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_excerpt text;
 ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS suggested_categories text[];
 
+-- ─── Feature: Imam data column ──────────────────────────────────────────────
+
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS imam_data jsonb;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS imam_data jsonb;
+
+-- ─── Feature: Burial data column ────────────────────────────────────────────
+
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS burial_data jsonb;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS burial_data jsonb;
+
 -- ─── Feature 10: Full-text search ────────────────────────────────────────────
 
 ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS search_vector tsvector

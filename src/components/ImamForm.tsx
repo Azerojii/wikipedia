@@ -2,7 +2,7 @@
 
 import { Plus, X } from 'lucide-react'
 import type { ImamData } from '@/types/mosque'
-import { FRENCH_REGIONS } from '@/lib/regions'
+import LocationSelector from './LocationSelector'
 
 interface ImamFormProps {
   imamData: ImamData
@@ -140,19 +140,14 @@ export default function ImamForm({ imamData, onChange }: ImamFormProps) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-xs font-medium mb-1">Région (France)</label>
-        <select
-          value={imamData.region || ''}
-          onChange={(e) => update('region', e.target.value || undefined)}
-          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-        >
-          <option value="">— Sélectionner une région —</option>
-          {FRENCH_REGIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </select>
-      </div>
+      <LocationSelector
+        region={imamData.region}
+        department={imamData.department}
+        commune={imamData.commune}
+        onRegionChange={(v) => update('region', v)}
+        onDepartmentChange={(v) => update('department', v)}
+        onCommuneChange={(v) => update('commune', v)}
+      />
 
       <div className="flex items-center gap-2">
         <input

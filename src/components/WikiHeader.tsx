@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, PenLine } from 'lucide-react'
 import SearchBar from './SearchBar'
 import UserMenu from './UserMenu'
 
@@ -19,8 +19,8 @@ export default function WikiHeader() {
               <Image
                 src="/logo.png"
                 alt="Musulmans Français Logo"
-                width={36}
-                height={36}
+                width={48}
+                height={48}
                 className="object-contain"
               />
               <div className="text-lg md:text-2xl font-bold font-serif text-primary">Musulmans Français</div>
@@ -30,8 +30,13 @@ export default function WikiHeader() {
               <Link href="/" className="hover:text-primary transition-colors">
                 Page d'accueil
               </Link>
-              <Link href="/submit" className="hover:text-primary transition-colors font-medium">
-                Soumettre
+              <Link
+                href="/submit"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:opacity-90 transition-colors text-sm font-medium"
+                title="Ajouter un article"
+              >
+                <PenLine size={14} />
+                Soumettre un article
               </Link>
             </nav>
           </div>
@@ -66,10 +71,12 @@ export default function WikiHeader() {
             </Link>
             <Link
               href="/submit"
-              className="hover:text-primary transition-colors font-medium py-1"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:opacity-90 transition-colors text-sm font-medium w-fit"
+              title="Ajouter un article"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Soumettre
+              <PenLine size={14} />
+              Soumettre un article
             </Link>
           </nav>
         </div>

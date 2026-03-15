@@ -8,6 +8,7 @@ import TableOfContents from '@/components/TableOfContents'
 import Infobox from '@/components/Infobox'
 import MosqueInfobox from '@/components/MosqueInfobox'
 import ImamInfobox from '@/components/ImamInfobox'
+import BurialInfobox from '@/components/BurialInfobox'
 import SuggestEditButton from '@/components/SuggestEditButton'
 import PrintButton from '@/components/PrintButton'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
@@ -101,6 +102,8 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
                 <MosqueInfobox mosque={article.mosque_data} />
               ) : article.article_type === 'imam' && article.imam_data ? (
                 <ImamInfobox imam={article.imam_data} />
+              ) : article.article_type === 'burial' && article.burial_data ? (
+                <BurialInfobox burial={article.burial_data} />
               ) : article.infobox ? (
                 <Infobox
                   title={article.infobox.title || article.title}

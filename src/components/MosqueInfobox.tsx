@@ -92,6 +92,18 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{mosque.region}</td>
             </tr>
           )}
+          {mosque.department && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Département</td>
+              <td className="py-1.5 px-3 align-top">{mosque.department}</td>
+            </tr>
+          )}
+          {mosque.commune && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Commune</td>
+              <td className="py-1.5 px-3 align-top">{mosque.commune}</td>
+            </tr>
+          )}
         </tbody>
       </table>
 
