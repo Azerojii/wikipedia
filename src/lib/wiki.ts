@@ -3,6 +3,16 @@ import type { MosqueData, ImamData, BurialData } from '@/types/mosque'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export interface Reference {
+  id: string
+  author?: string
+  title: string
+  year?: string
+  url?: string
+  publisher?: string
+  accessDate?: string
+}
+
 export interface InfoboxSection {
   title?: string
   items: {
@@ -34,6 +44,7 @@ export interface WikiArticle {
   mosque_data?: MosqueData | null
   imam_data?: ImamData | null
   burial_data?: BurialData | null
+  references?: Reference[] | null
   image_url?: string | null
   categories: string[]
   author_name?: string | null
@@ -52,6 +63,7 @@ export interface WikiSubmission {
   mosque_data?: MosqueData | null
   imam_data?: ImamData | null
   burial_data?: BurialData | null
+  references?: Reference[] | null
   image_url?: string | null
   categories?: string[] | null
   author_name?: string | null

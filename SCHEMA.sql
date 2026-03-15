@@ -132,3 +132,8 @@ ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS search_vector tsvector
   ) STORED;
 
 CREATE INDEX IF NOT EXISTS wiki_articles_search_idx ON wiki_articles USING GIN(search_vector);
+
+-- ─── Feature: References / Citations ────────────────────────────────────────
+
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS "references" jsonb;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS "references" jsonb;

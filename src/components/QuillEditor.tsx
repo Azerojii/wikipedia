@@ -1,12 +1,16 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 import 'quill/dist/quill.snow.css'
 
 interface QuillEditorProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+}
+
+export interface QuillEditorHandle {
+  insertCitation: (refId: string, refNumber: number) => void
 }
 
 const modules = {
@@ -30,16 +34,26 @@ const formats = [
   'align',
 ]
 
-export default function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) {
+const QuillEditor = forwardRef<QuillEditorHandle, QuillEditorProps>(function QuillEditor({ value, onChange, placeholder }, ref) {
   const containerRef = useRef<HTMLDivElement>(null)
   const quillRef = useRef<InstanceType<typeof import('quill').default> | null>(null)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
 
+  useImperativeHandle(ref, () => ({
+    insertCitation(refId: string, refNumber: number) {
+      const quill = quillRef.current
+      if (!quill) return
+      const range = quill.getSelection(true)
+      const marker = `<sup class="cite-ref" data-ref-id="${refId}">[${refNumber}]</sup>`
+      quill.clipboard.dangerouslyPasteHTML(range.index, marker)
+      quill.setSelection(range.index + 1, 0)
+    },
+  }))
+
   useEffect(() => {
     if (!containerRef.current || quillRef.current) return
 
-    // Quill must be imported dynamically (client-only)
     import('quill').then(({ default: Quill }) => {
       if (!containerRef.current || quillRef.current) return
 
@@ -52,7 +66,6 @@ export default function QuillEditor({ value, onChange, placeholder }: QuillEdito
 
       quillRef.current = quill
 
-      // Set initial value
       if (value) {
         quill.clipboard.dangerouslyPasteHTML(value)
       }
@@ -64,7 +77,6 @@ export default function QuillEditor({ value, onChange, placeholder }: QuillEdito
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Sync external value changes (e.g. reset)
   useEffect(() => {
     const quill = quillRef.current
     if (!quill) return
@@ -117,7 +129,15 @@ export default function QuillEditor({ value, onChange, placeholder }: QuillEdito
           font-style: italic;
           color: #4b5563;
         }
+        .quill-wrapper .ql-editor .cite-ref {
+          color: #067782;
+          cursor: pointer;
+          font-size: 0.75em;
+          vertical-align: super;
+        }
       `}</style>
     </div>
   )
-}
+})
+
+export default QuillEditor

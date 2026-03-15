@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiFooter from '@/components/WikiFooter'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
-import QuillEditor from '@/components/QuillEditor'
+import QuillEditor, { QuillEditorHandle } from '@/components/QuillEditor'
+import ReferencesManager from '@/components/ReferencesManager'
 import { Loader2, Plus, Info } from 'lucide-react'
+import type { Reference } from '@/lib/wiki'
 import MosqueForm from '@/components/MosqueForm'
 import ImamForm from '@/components/ImamForm'
 import BurialForm from '@/components/BurialForm'
@@ -36,6 +38,8 @@ export default function SubmitArticlePage() {
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
   const [imamData, setImamData] = useState<ImamData>({})
   const [burialData, setBurialData] = useState<BurialData>({})
+  const [references, setReferences] = useState<Reference[]>([])
+  const quillEditorRef = useRef<QuillEditorHandle>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -168,6 +172,7 @@ export default function SubmitArticlePage() {
           imam_data: articleType === 'imam' ? imamData : undefined,
           burial_data: articleType === 'burial' ? burialData : undefined,
           author_name: submitterName || undefined,
+          references: references.length > 0 ? references : undefined,
           submitterEmail,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
@@ -547,12 +552,23 @@ export default function SubmitArticlePage() {
               </div>
             </div>
 
+            {/* References */}
+            <ReferencesManager
+              references={references}
+              onChange={setReferences}
+              onInsertCitation={(refId) => {
+                const idx = references.findIndex(r => r.id === refId)
+                if (idx !== -1) quillEditorRef.current?.insertCitation(refId, idx + 1)
+              }}
+            />
+
             {/* Content */}
             <div>
               <label className="block text-sm font-bold mb-2">
                 Contenu de l'article <span className="text-red-500">*</span>
               </label>
               <QuillEditor
+                ref={quillEditorRef}
                 value={content}
                 onChange={setContent}
                 placeholder="Commencez à écrire votre article ici..."

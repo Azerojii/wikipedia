@@ -12,6 +12,7 @@ import BurialInfobox from '@/components/BurialInfobox'
 import SuggestEditButton from '@/components/SuggestEditButton'
 import PrintButton from '@/components/PrintButton'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
+import ArticleReferences from '@/components/ArticleReferences'
 import YouTubeVideos from '@/components/YouTubeVideos'
 
 export const dynamic = 'force-dynamic'
@@ -78,7 +79,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
 
             <div className="flex flex-col-reverse lg:flex-row gap-8">
               <div className="flex-1 min-w-0">
-                <MarkdownRenderer content={article.content} />
+                <ArticleReferences content={article.content} references={article.references} />
 
                 {/* Article metadata */}
                 <div className="mt-12 pt-5 border-t border-gray-200">

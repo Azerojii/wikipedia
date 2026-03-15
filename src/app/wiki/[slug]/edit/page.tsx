@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
-import QuillEditor from '@/components/QuillEditor'
+import QuillEditor, { QuillEditorHandle } from '@/components/QuillEditor'
+import ReferencesManager from '@/components/ReferencesManager'
 import { Loader2, Plus } from 'lucide-react'
+import type { Reference } from '@/lib/wiki'
 import MosqueForm from '@/components/MosqueForm'
 import ImamForm from '@/components/ImamForm'
 import type { MosqueData, ImamData } from '@/types/mosque'
@@ -34,6 +36,8 @@ export default function EditArticlePage() {
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
   const [imamData, setImamData] = useState<ImamData>({})
   const [authorName, setAuthorName] = useState('')
+  const [references, setReferences] = useState<Reference[]>([])
+  const quillEditorRef = useRef<QuillEditorHandle>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -59,6 +63,7 @@ export default function EditArticlePage() {
       if (data.author_name) setAuthorName(data.author_name)
       if (data.mosque_data) setMosqueData(data.mosque_data)
       if (data.imam_data) setImamData(data.imam_data)
+      if (data.references) setReferences(data.references)
       
       if (data.infobox) {
         setInfoboxTitle(data.infobox.title || '')
@@ -201,6 +206,7 @@ export default function EditArticlePage() {
           mosque_data: articleType === 'mosque' ? mosqueData : undefined,
           imam_data: articleType === 'imam' ? imamData : undefined,
           author_name: authorName || undefined,
+          references: references.length > 0 ? references : undefined,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
         }),
       })
@@ -526,12 +532,23 @@ export default function EditArticlePage() {
               </div>
             </div>
 
+            {/* References */}
+            <ReferencesManager
+              references={references}
+              onChange={setReferences}
+              onInsertCitation={(refId) => {
+                const idx = references.findIndex(r => r.id === refId)
+                if (idx !== -1) quillEditorRef.current?.insertCitation(refId, idx + 1)
+              }}
+            />
+
             {/* Content */}
             <div>
               <label className="block text-sm font-bold mb-2">
                 Contenu de l'article <span className="text-red-500">*</span>
               </label>
               <QuillEditor
+                ref={quillEditorRef}
                 value={content}
                 onChange={setContent}
                 placeholder="Commencez à écrire votre article ici..."
