@@ -15,7 +15,17 @@ function isNewArticle(date: string): boolean {
 function getArticleRegion(article: WikiArticle): string | undefined {
   if (article.article_type === 'mosque') return article.mosque_data?.region
   if (article.article_type === 'imam') return article.imam_data?.region
+  if (article.article_type === 'burial') return article.burial_data?.region
   return undefined
+}
+
+function getArticleImage(article: WikiArticle): string | null {
+  if (article.image_url) return article.image_url
+  if (article.mosque_data?.image?.src) return article.mosque_data.image.src
+  if (article.imam_data?.image?.src) return article.imam_data.image.src
+  if (article.burial_data?.image?.src) return article.burial_data.image.src
+  if (article.infobox?.image?.src) return article.infobox.image.src
+  return null
 }
 
 function TypeBadge({ type }: { type: string }) {
@@ -80,31 +90,48 @@ export default function CategoryArticleList({ articles }: CategoryArticleListPro
 
       <div className="space-y-4">
         {filtered.length > 0 ? (
-          filtered.map((article) => (
-            <Link
-              key={article.slug}
-              href={`/wiki/${article.slug}`}
-              className="group block p-5 bg-white border border-gray-200 rounded-xl hover:border-primary/30 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <h3 className="text-lg font-bold text-primary group-hover:text-primary/80 transition-colors">{article.title}</h3>
-                    <TypeBadge type={article.article_type} />
+          <>
+          {filtered.map((article) => {
+            const imageUrl = getArticleImage(article)
+            return (
+              <Link
+                key={article.slug}
+                href={`/wiki/${article.slug}`}
+                className="group block p-5 bg-white border border-gray-200 rounded-xl hover:border-primary/30 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    {imageUrl && (
+                      <img
+                        src={imageUrl}
+                        alt={article.title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-100"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <h3 className="text-lg font-bold text-primary group-hover:text-primary/80 transition-colors">{article.title}</h3>
+                        <TypeBadge type={article.article_type} />
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">{article.excerpt}</p>
+                      {getArticleRegion(article) && (
+                        <p className="text-xs text-gray-400 mt-2">📍 {getArticleRegion(article)}</p>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{article.excerpt}</p>
-                  {getArticleRegion(article) && (
-                    <p className="text-xs text-gray-400 mt-2">📍 {getArticleRegion(article)}</p>
+                  {isNewArticle(article.updated_at) && (
+                    <span className="ml-4 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full whitespace-nowrap">
+                      Nouveau
+                    </span>
                   )}
                 </div>
-                {isNewArticle(article.updated_at) && (
-                  <span className="ml-4 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full whitespace-nowrap">
-                    Nouveau
-                  </span>
-                )}
-              </div>
-            </Link>
-          ))
+              </Link>
+            )
+          })}
+          </>
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-600">Aucun article pour cette région.</p>
