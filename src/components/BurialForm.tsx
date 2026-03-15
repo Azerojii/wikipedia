@@ -132,7 +132,7 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
         region={burialData.region}
         department={burialData.department}
         commune={burialData.commune}
-        onRegionChange={(v) => update('region', v)}
+        onRegionChange={(v) => onChange({ ...burialData, region: v, department: undefined })}
         onDepartmentChange={(v) => update('department', v)}
         onCommuneChange={(v) => update('commune', v)}
       />

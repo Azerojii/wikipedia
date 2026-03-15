@@ -27,11 +27,7 @@ export default function LocationSelector({
         <label className="block text-xs font-medium mb-1">Région</label>
         <select
           value={region || ''}
-          onChange={(e) => {
-            const val = e.target.value || undefined
-            onRegionChange(val)
-            onDepartmentChange(undefined)
-          }}
+          onChange={(e) => onRegionChange(e.target.value || undefined)}
           className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
         >
           <option value="">— Sélectionner une région —</option>

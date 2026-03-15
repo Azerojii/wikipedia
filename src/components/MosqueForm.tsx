@@ -161,7 +161,7 @@ export default function MosqueForm({ mosqueData, onChange }: MosqueFormProps) {
         region={mosqueData.region}
         department={mosqueData.department}
         commune={mosqueData.commune}
-        onRegionChange={(v) => update('region', v)}
+        onRegionChange={(v) => onChange({ ...mosqueData, region: v, department: undefined })}
         onDepartmentChange={(v) => update('department', v)}
         onCommuneChange={(v) => update('commune', v)}
       />

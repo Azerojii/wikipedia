@@ -144,7 +144,7 @@ export default function ImamForm({ imamData, onChange }: ImamFormProps) {
         region={imamData.region}
         department={imamData.department}
         commune={imamData.commune}
-        onRegionChange={(v) => update('region', v)}
+        onRegionChange={(v) => onChange({ ...imamData, region: v, department: undefined })}
         onDepartmentChange={(v) => update('department', v)}
         onCommuneChange={(v) => update('commune', v)}
       />
