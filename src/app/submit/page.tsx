@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import WikiHeader from '@/components/WikiHeader'
+import WikiFooter from '@/components/WikiFooter'
 import WikiSidebar from '@/components/WikiSidebar'
 import ImageUploader from '@/components/ImageUploader'
 import CountryEmojiPicker from '@/components/CountryEmojiPicker'
@@ -193,12 +194,12 @@ export default function SubmitArticlePage() {
     return (
       <div className="min-h-screen bg-white">
         <WikiHeader />
-        
+
         <div className="flex max-w-[1400px] mx-auto">
           <WikiSidebar />
-          
-          <main className="flex-1 px-6 py-4 max-w-[860px]">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
+
+          <main className="flex-1 px-4 md:px-8 py-6 max-w-[860px]">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
               <h1 className="text-3xl font-serif font-bold text-green-800 mb-4">
                 Soumission réussie !
               </h1>
@@ -211,6 +212,7 @@ export default function SubmitArticlePage() {
             </div>
           </main>
         </div>
+        <WikiFooter />
       </div>
     )
   }
@@ -218,20 +220,20 @@ export default function SubmitArticlePage() {
   return (
     <div className="min-h-screen bg-white">
       <WikiHeader />
-      
+
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
-        
-        <main className="flex-1 px-6 py-4 max-w-[860px]">
-          <h1 className="text-4xl font-serif font-bold border-b border-gray-300 pb-2 mb-6">
+
+        <main className="flex-1 px-4 md:px-8 py-6 max-w-[860px]">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold border-b border-gray-200 pb-3 mb-6">
             Soumettre un article
           </h1>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex gap-3">
-            <Info className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+          <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 mb-6 flex gap-3">
+            <Info className="text-blue-500 flex-shrink-0 mt-0.5" size={20} />
             <div className="text-sm text-blue-800">
-              <p className="font-semibold mb-1">Soumission publique</p>
-              <p>
+              <p className="font-semibold mb-0.5">Soumission publique</p>
+              <p className="text-blue-600">
                 Votre article sera examiné par un administrateur avant d'être publié sur Musulmans Français.
                 Vous recevrez une notification par email.
               </p>
@@ -246,8 +248,8 @@ export default function SubmitArticlePage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Submitter Info */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-              <h3 className="font-bold text-lg">Vos informations</h3>
+            <div className="bg-gray-50/70 rounded-xl p-5 space-y-4 border border-gray-100">
+              <h3 className="font-bold text-base text-gray-800">Vos informations</h3>
               
               <div>
                 <label className="block text-sm font-bold mb-2">
@@ -355,7 +357,7 @@ export default function SubmitArticlePage() {
 
             {/* Infobox */}
             {articleType === 'article' && (
-            <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+            <div className="border border-gray-100 rounded-xl p-5 bg-gray-50/70">
               <div className="mb-4">
                 <label className="block text-sm font-bold mb-2">
                   Infobox
@@ -562,11 +564,11 @@ export default function SubmitArticlePage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !title || isQuillEmpty(content) || !submitterName || !submitterEmail}
-                className="px-6 py-3 bg-primary text-white rounded hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+                className="px-6 py-2.5 bg-primary text-white rounded-lg hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm shadow-sm transition-all"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 size={20} className="animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                     Envoi en cours...
                   </>
                 ) : (
@@ -576,7 +578,7 @@ export default function SubmitArticlePage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded font-medium"
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-sm text-gray-700 transition-colors"
               >
                 Annuler
               </button>
@@ -584,6 +586,7 @@ export default function SubmitArticlePage() {
           </form>
         </main>
       </div>
+      <WikiFooter />
     </div>
   )
 }

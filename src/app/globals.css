@@ -13,6 +13,25 @@
 body {
   font-family: Georgia, 'Times New Roman', serif, 'Apple Color Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'EmojiOne Color';
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth focus outlines for accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(187 96% 27%);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Better selection colors */
+::selection {
+  background-color: hsl(187 96% 27% / 0.15);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Print styles */

@@ -2,11 +2,11 @@ import Link from 'next/link'
 
 export default function WikiFooter() {
   return (
-    <footer className="border-t border-wiki-border bg-wiki-bg mt-12 py-8">
+    <footer className="border-t border-gray-200 bg-white mt-12 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <h3 className="text-sm font-bold uppercase text-gray-500 mb-3">Réseaux sociaux</h3>
+            <h3 className="text-xs font-bold uppercase text-gray-400 tracking-wider mb-3">Réseaux sociaux</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
@@ -51,7 +51,7 @@ export default function WikiFooter() {
           </div>
 
           <div>
-            <h3 className="text-sm font-bold uppercase text-gray-500 mb-3">Sites amis</h3>
+            <h3 className="text-xs font-bold uppercase text-gray-400 tracking-wider mb-3">Sites amis</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
@@ -67,7 +67,7 @@ export default function WikiFooter() {
           </div>
         </div>
 
-        <div className="mt-8 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
+        <div className="mt-8 pt-4 border-t border-gray-100 text-center text-xs text-gray-400">
           <p>Musulmans Français — Encyclopédie libre sur la Grande Mosquée de Paris</p>
         </div>
       </div>
