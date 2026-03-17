@@ -25,6 +25,19 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
         </p>
       </div>
 
+      {/* Burial Status */}
+      <div>
+        <label className="block text-xs font-medium mb-1">Statut de sépulture</label>
+        <select
+          value={burialData.burialStatus || 'enterre'}
+          onChange={(e) => update('burialStatus', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+        >
+          <option value="enterre">Enterré</option>
+          <option value="inconnu">Lieu inconnu (non retrouvé)</option>
+        </select>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-medium mb-1">Nom affiché dans l'infobox</label>
@@ -137,55 +150,59 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
         onCommuneChange={(v) => update('commune', v)}
       />
 
-      {/* Cemetery details */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium mb-1">Nom du cimetière</label>
-          <input
-            type="text"
-            value={burialData.cemeteryName || ''}
-            onChange={(e) => update('cemeteryName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-            placeholder="ex: Cimetière du Père-Lachaise"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1">Division</label>
-          <input
-            type="text"
-            value={burialData.division || ''}
-            onChange={(e) => update('division', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-            placeholder="ex: Division 87"
-          />
-        </div>
-      </div>
+      {/* Cemetery details - hidden when burial status is unknown */}
+      {burialData.burialStatus !== 'inconnu' && (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium mb-1">Nom du cimetière</label>
+              <input
+                type="text"
+                value={burialData.cemeteryName || ''}
+                onChange={(e) => update('cemeteryName', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                placeholder="ex: Cimetière du Père-Lachaise"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">Division</label>
+              <input
+                type="text"
+                value={burialData.division || ''}
+                onChange={(e) => update('division', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                placeholder="ex: Division 87"
+              />
+            </div>
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium mb-1">Numéro de tombe</label>
-          <input
-            type="text"
-            value={burialData.graveNumber || ''}
-            onChange={(e) => update('graveNumber', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1">Type de concession</label>
-          <select
-            value={burialData.concessionType || ''}
-            onChange={(e) => update('concessionType', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-          >
-            <option value="">— Sélectionner —</option>
-            <option value="15">15 ans</option>
-            <option value="30">30 ans</option>
-            <option value="50">50 ans</option>
-            <option value="perpetuelle">Perpétuelle</option>
-          </select>
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium mb-1">Numéro de tombe</label>
+              <input
+                type="text"
+                value={burialData.graveNumber || ''}
+                onChange={(e) => update('graveNumber', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">Type de concession</label>
+              <select
+                value={burialData.concessionType || ''}
+                onChange={(e) => update('concessionType', e.target.value || undefined)}
+                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              >
+                <option value="">— Sélectionner —</option>
+                <option value="15">15 ans</option>
+                <option value="30">30 ans</option>
+                <option value="50">50 ans</option>
+                <option value="perpetuelle">Perpétuelle</option>
+              </select>
+            </div>
+          </div>
+        </>
+      )}
 
       <div>
         <label className="block text-xs font-medium mb-1">Adresse de contact</label>
@@ -214,21 +231,23 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
         )}
       </div>
 
-      <div>
-        <label className="block text-xs font-medium mb-2">Photo de la tombe</label>
-        <ImageUploader
-          onImageInsert={() => {}}
-          onImageSelected={({ src, caption }) => update('graveImage', { src, caption: caption || '' })}
-        />
-        {burialData.graveImage?.src && (
-          <div className="mt-2 p-2 bg-white border border-gray-300 rounded">
-            <img src={burialData.graveImage.src} alt="Tombe" className="w-32 h-32 object-cover rounded" />
-            <button type="button" onClick={() => update('graveImage', undefined)} className="mt-1 text-xs text-red-600 hover:underline">
-              Supprimer
-            </button>
-          </div>
-        )}
-      </div>
+      {burialData.burialStatus !== 'inconnu' && (
+        <div>
+          <label className="block text-xs font-medium mb-2">Photo de la tombe</label>
+          <ImageUploader
+            onImageInsert={() => {}}
+            onImageSelected={({ src, caption }) => update('graveImage', { src, caption: caption || '' })}
+          />
+          {burialData.graveImage?.src && (
+            <div className="mt-2 p-2 bg-white border border-gray-300 rounded">
+              <img src={burialData.graveImage.src} alt="Tombe" className="w-32 h-32 object-cover rounded" />
+              <button type="button" onClick={() => update('graveImage', undefined)} className="mt-1 text-xs text-red-600 hover:underline">
+                Supprimer
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tribute */}
       <div>

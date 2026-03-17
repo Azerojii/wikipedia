@@ -58,6 +58,7 @@ export interface ImamData {
 }
 
 export interface BurialData {
+  burialStatus?: 'enterre' | 'inconnu'
   name?: string
   headerColor?: string
   image?: { src: string; caption: string }

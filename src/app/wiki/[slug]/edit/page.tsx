@@ -12,7 +12,8 @@ import { Loader2, Plus } from 'lucide-react'
 import type { Reference } from '@/lib/wiki'
 import MosqueForm from '@/components/MosqueForm'
 import ImamForm from '@/components/ImamForm'
-import type { MosqueData, ImamData } from '@/types/mosque'
+import BurialForm from '@/components/BurialForm'
+import type { MosqueData, ImamData, BurialData } from '@/types/mosque'
 
 export default function EditArticlePage() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function EditArticlePage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Histoire')
+  const [categories, setCategories] = useState<string[]>([])
   const [content, setContent] = useState('')
   const [infoboxTitle, setInfoboxTitle] = useState('')
   const [infoboxColor, setInfoboxColor] = useState('#067782')
@@ -32,9 +34,9 @@ export default function EditArticlePage() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
-  const [articleType, setArticleType] = useState<'article' | 'mosque' | 'imam'>('article')
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
   const [imamData, setImamData] = useState<ImamData>({})
+  const [burialData, setBurialData] = useState<BurialData>({})
   const [authorName, setAuthorName] = useState('')
   const [references, setReferences] = useState<Reference[]>([])
   const quillEditorRef = useRef<QuillEditorHandle>(null)
@@ -42,8 +44,13 @@ export default function EditArticlePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Sépultures' ? 'burial' : 'article'
+
   useEffect(() => {
     fetchArticle()
+    fetch('/api/categories').then(r => r.json()).then(d => {
+      if (d.categories) setCategories(d.categories)
+    }).catch(() => {})
   }, [slug])
 
   const fetchArticle = async () => {
@@ -59,10 +66,10 @@ export default function EditArticlePage() {
       setDescription(data.excerpt || data.description || '')
       setCategory((data.categories && data.categories[0]) || data.category || 'Histoire')
       setContent(data.content || data.rawContent || '')
-      setArticleType(data.article_type || 'article')
       if (data.author_name) setAuthorName(data.author_name)
       if (data.mosque_data) setMosqueData(data.mosque_data)
       if (data.imam_data) setImamData(data.imam_data)
+      if (data.burial_data) setBurialData(data.burial_data)
       if (data.references) setReferences(data.references)
       
       if (data.infobox) {
@@ -205,6 +212,7 @@ export default function EditArticlePage() {
           infobox: articleType === 'article' ? infoboxData : undefined,
           mosque_data: articleType === 'mosque' ? mosqueData : undefined,
           imam_data: articleType === 'imam' ? imamData : undefined,
+          burial_data: articleType === 'burial' ? burialData : undefined,
           author_name: authorName || undefined,
           references: references.length > 0 ? references : undefined,
           youtubeVideos: validYoutubeVideos.length > 0 ? validYoutubeVideos : undefined,
@@ -295,27 +303,9 @@ export default function EditArticlePage() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option>Histoire</option>
-                <option>Architecture</option>
-                <option>Culture</option>
-                <option>Religion</option>
-                <option>Événements</option>
-                <option>Personnalités</option>
-                <option>Général</option>
-              </select>
-            </div>
-
-            {/* Article Type */}
-            <div>
-              <label className="block text-sm font-bold mb-2">Type d'article</label>
-              <select
-                value={articleType}
-                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque' | 'imam')}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="article">Article général</option>
-                <option value="mosque">Mosquée</option>
-                <option value="imam">Imam</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
@@ -339,6 +329,11 @@ export default function EditArticlePage() {
             {/* Imam Form */}
             {articleType === 'imam' && (
               <ImamForm imamData={imamData} onChange={setImamData} />
+            )}
+
+            {/* Burial Form */}
+            {articleType === 'burial' && (
+              <BurialForm burialData={burialData} onChange={setBurialData} />
             )}
 
             {/* Infobox */}

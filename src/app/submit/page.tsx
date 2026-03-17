@@ -34,7 +34,6 @@ export default function SubmitArticlePage() {
     items: Array<{ label: string; value: string; type: 'text' | 'date' | 'link' }>
   }>>([{ title: '', items: [{ label: '', value: '', type: 'text' }] }])
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([])
-  const [articleType, setArticleType] = useState<'article' | 'mosque' | 'imam' | 'burial'>('article')
   const [mosqueData, setMosqueData] = useState<MosqueData>({})
   const [imamData, setImamData] = useState<ImamData>({})
   const [burialData, setBurialData] = useState<BurialData>({})
@@ -62,6 +61,8 @@ export default function SubmitArticlePage() {
   }
 
   const isQuillEmpty = (html: string) => !html || html.replace(/<(.|\n)*?>/g, '').trim() === '' || html === '<p><br></p>'
+
+  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Sépultures' ? 'burial' : 'article'
 
   const addInfoboxSection = () => {
     setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])
@@ -327,21 +328,6 @@ export default function SubmitArticlePage() {
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
-              </select>
-            </div>
-
-            {/* Article Type */}
-            <div>
-              <label className="block text-sm font-bold mb-2">Type d'article</label>
-              <select
-                value={articleType}
-                onChange={(e) => setArticleType(e.target.value as 'article' | 'mosque' | 'imam' | 'burial')}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="article">Article général</option>
-                <option value="mosque">Mosquée</option>
-                <option value="imam">Imam</option>
-                <option value="burial">Sépulture</option>
               </select>
             </div>
 
