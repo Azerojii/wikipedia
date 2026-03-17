@@ -15,7 +15,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const categories = ['Imams', 'Mosquées']
+const categories = ['Imams', 'Mosquées', 'Sépultures']
 
 async function seed() {
   for (const name of categories) {
