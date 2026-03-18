@@ -70,7 +70,7 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                       )}
                       {article.article_type === 'burial' && (
                         <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                          🪦 Sépulture
+                          🪦 Mort Musulman
                         </span>
                       )}
                     </div>

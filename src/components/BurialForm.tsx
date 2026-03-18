@@ -19,9 +19,9 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
   return (
     <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 space-y-4">
       <div>
-        <label className="block text-sm font-bold mb-2">Données Sépulture</label>
+        <label className="block text-sm font-bold mb-2">Données Mort Musulman</label>
         <p className="text-xs text-gray-600 mb-4">
-          Ces champs s'affichent dans l'infobox spécifique aux sépultures.
+          Ces champs s'affichent dans l'infobox spécifique aux morts musulmans.
         </p>
       </div>
 

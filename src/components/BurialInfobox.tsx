@@ -23,7 +23,7 @@ export default function BurialInfobox({ burial }: BurialInfoboxProps) {
         className="text-white font-bold text-center py-2 px-3"
         style={{ backgroundColor: headerColor }}
       >
-        {burial.name || burial.fullName || 'Sépulture'}
+        {burial.name || burial.fullName || 'Mort Musulman'}
       </div>
 
       {/* Portrait */}
