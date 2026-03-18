@@ -79,4 +79,6 @@ export interface BurialData {
   concessionType?: '15' | '30' | '50' | 'perpetuelle'
   contactAddress?: string
   tribute?: string
+  convertedToIslam?: string
+  additionalInfo?: string
 }

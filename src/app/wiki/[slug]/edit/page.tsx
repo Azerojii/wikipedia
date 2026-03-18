@@ -44,7 +44,7 @@ export default function EditArticlePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Sépultures' ? 'burial' : 'article'
+  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
 
   useEffect(() => {
     fetchArticle()
@@ -538,6 +538,7 @@ export default function EditArticlePage() {
             />
 
             {/* Content */}
+            {articleType !== 'burial' && (
             <div>
               <label className="block text-sm font-bold mb-2">
                 Contenu de l'article <span className="text-red-500">*</span>
@@ -549,12 +550,13 @@ export default function EditArticlePage() {
                 placeholder="Commencez à écrire votre article ici..."
               />
             </div>
+            )}
 
             {/* Submit Button */}
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !title || !content}
+                disabled={isSubmitting || !title || (articleType !== 'burial' && !content)}
                 className="px-6 py-3 bg-primary text-white rounded hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
               >
                 {isSubmitting ? (

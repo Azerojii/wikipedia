@@ -62,7 +62,7 @@ export default function SubmitArticlePage() {
 
   const isQuillEmpty = (html: string) => !html || html.replace(/<(.|\n)*?>/g, '').trim() === '' || html === '<p><br></p>'
 
-  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Sépultures' ? 'burial' : 'article'
+  const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
 
   const addInfoboxSection = () => {
     setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])

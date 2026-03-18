@@ -41,7 +41,7 @@ function getTypeStats(articles: WikiArticle[]): Record<string, number> {
   const typeLabels: Record<string, string> = {
     mosque: 'Mosquées',
     imam: 'Imams',
-    burial: 'Sépultures',
+    burial: 'Morts Musulmans',
     article: 'Articles',
   }
   for (const a of articles) {

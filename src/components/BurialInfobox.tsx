@@ -72,8 +72,25 @@ export default function BurialInfobox({ burial }: BurialInfoboxProps) {
               <td className="py-1.5 px-3 align-top">{burial.countryOfOrigin}</td>
             </tr>
           )}
+          {burial.convertedToIslam && (
+            <tr className="border-t border-[#a2a9b1]">
+              <td className="py-1.5 px-3 align-top text-gray-700 font-medium">Converti à l'Islam</td>
+              <td className="py-1.5 px-3 align-top">{burial.convertedToIslam}</td>
+            </tr>
+          )}
         </tbody>
       </table>
+
+      {burial.additionalInfo && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Informations supplémentaires
+          </div>
+          <div className="p-3 text-xs text-gray-700 leading-relaxed">
+            {burial.additionalInfo}
+          </div>
+        </>
+      )}
 
       {/* Dates */}
       {(burial.birthDate || burial.deathDate) && (

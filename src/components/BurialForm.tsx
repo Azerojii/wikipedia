@@ -116,6 +116,31 @@ export default function BurialForm({ burialData, onChange }: BurialFormProps) {
         />
       </div>
 
+      {/* Conversion & Additional Info */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-medium mb-1">Converti à l'Islam (année)</label>
+          <input
+            type="text"
+            value={burialData.convertedToIslam || ''}
+            onChange={(e) => update('convertedToIslam', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+            placeholder="ex: 1985"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium mb-1">Informations supplémentaires</label>
+        <textarea
+          value={burialData.additionalInfo || ''}
+          onChange={(e) => update('additionalInfo', e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm resize-none"
+          placeholder="Informations supplémentaires..."
+        />
+      </div>
+
       {/* Dates */}
       <div className="grid grid-cols-2 gap-4">
         <div>
