@@ -61,15 +61,14 @@ export default function SubmitArticlePage() {
   }
 
   const isQuillEmpty = (html: string) => !html || html.replace(/<(.|\n)*?>/g, '').trim() === '' || html === '<p><br></p>'
-  const getWordCount = (html: string) => {
-    const text = html.replace(/<(.|\n)*?>/g, '').trim()
-    return text ? text.split(/\s+/).filter(Boolean).length : 0
+  const getCharCount = (html: string) => {
+    return html.replace(/<(.|\n)*?>/g, '').trim().length
   }
 
   const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
-  const wordCount = getWordCount(content)
-  const BURIAL_WORD_LIMIT = 140
-  const isBurialOverLimit = articleType === 'burial' && wordCount > BURIAL_WORD_LIMIT
+  const charCount = getCharCount(content)
+  const BURIAL_CHAR_LIMIT = 140
+  const isBurialOverLimit = articleType === 'burial' && charCount > BURIAL_CHAR_LIMIT
 
   const addInfoboxSection = () => {
     setInfoboxSections([...infoboxSections, { title: '', items: [{ label: '', value: '', type: 'text' }] }])
@@ -561,7 +560,7 @@ export default function SubmitArticlePage() {
                 Contenu de l'article <span className="text-red-500">*</span>
                 {articleType === 'burial' && (
                   <span className={`ml-2 text-xs font-normal ${isBurialOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                    ({wordCount}/{BURIAL_WORD_LIMIT} mots)
+                    ({charCount}/{BURIAL_CHAR_LIMIT} caractères)
                   </span>
                 )}
               </label>
@@ -572,7 +571,7 @@ export default function SubmitArticlePage() {
                 placeholder="Commencez à écrire votre article ici..."
               />
               {isBurialOverLimit && (
-                <p className="text-red-500 text-xs mt-1">Le contenu ne doit pas dépasser {BURIAL_WORD_LIMIT} mots.</p>
+                <p className="text-red-500 text-xs mt-1">Le contenu ne doit pas dépasser {BURIAL_CHAR_LIMIT} caractères.</p>
               )}
             </div>
 
