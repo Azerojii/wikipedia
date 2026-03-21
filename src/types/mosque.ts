@@ -80,5 +80,5 @@ export interface BurialData {
   contactAddress?: string
   tribute?: string
   convertedToIslam?: string
-  additionalInfo?: string
+
 }
