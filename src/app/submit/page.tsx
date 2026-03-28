@@ -210,7 +210,7 @@ export default function SubmitArticlePage() {
         <div className="flex max-w-[1400px] mx-auto">
           <WikiSidebar />
 
-          <main className="flex-1 min-w-0 bg-white border-x border-gray-100 px-6 md:px-10 lg:px-14 py-6">
+          <main className="flex-1 min-w-0 bg-white border-x border-gray-100 px-4 md:px-10 lg:px-14 py-6">
             <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
               <h1 className="text-3xl font-serif font-bold text-green-800 mb-4">
                 Soumission réussie !
@@ -366,7 +366,7 @@ export default function SubmitArticlePage() {
 
               <div className="space-y-4">
                 {/* Infobox Title and Color */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium mb-1">Titre de l'infobox</label>
                     <input
@@ -438,15 +438,15 @@ export default function SubmitArticlePage() {
 
                       <div className="space-y-2">
                         {section.items.map((item, itemIndex) => (
-                          <div key={itemIndex} className="flex gap-2">
+                          <div key={itemIndex} className="flex flex-col sm:flex-row gap-2">
                             <input
                               type="text"
                               value={item.label}
                               onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'label', e.target.value)}
                               placeholder="Label (ex: Naissance)"
-                              className="w-1/3 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                              className="w-full sm:w-1/3 px-2 py-1.5 border border-gray-300 rounded text-xs"
                             />
-                            <div className="flex-1 flex gap-1">
+                            <div className="flex gap-1 flex-1">
                               <input
                                 type="text"
                                 value={item.value}
@@ -464,22 +464,24 @@ export default function SubmitArticlePage() {
                                 />
                               </div>
                             </div>
-                            <select
-                              value={item.type}
-                              onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'type', e.target.value)}
-                              className="w-24 px-2 py-1.5 border border-gray-300 rounded text-xs"
-                            >
-                              <option value="text">Texte</option>
-                              <option value="date">Date</option>
-                              <option value="link">Lien</option>
-                            </select>
-                            <button
-                              type="button"
-                              onClick={() => removeInfoboxItem(sectionIndex, itemIndex)}
-                              className="px-2 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
-                            >
-                              ×
-                            </button>
+                            <div className="flex gap-2">
+                              <select
+                                value={item.type}
+                                onChange={(e) => updateInfoboxItem(sectionIndex, itemIndex, 'type', e.target.value)}
+                                className="flex-1 sm:w-24 px-2 py-1.5 border border-gray-300 rounded text-xs"
+                              >
+                                <option value="text">Texte</option>
+                                <option value="date">Date</option>
+                                <option value="link">Lien</option>
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => removeInfoboxItem(sectionIndex, itemIndex)}
+                                className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                              >
+                                ×
+                              </button>
+                            </div>
                           </div>
                         ))}
                         <button

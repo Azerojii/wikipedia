@@ -32,25 +32,25 @@ export default async function Home() {
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
         {/* Hero Section */}
         <div className="text-center mb-10 bg-white rounded-2xl border border-gray-200 px-6 py-10 md:py-14 shadow-sm">
-          <div className="flex flex-wrap items-center justify-center gap-5 md:gap-8 mb-5">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 mb-5">
             <Image
               src="/logo.png"
               alt="Musulmans Français Logo"
-              width={140}
-              height={140}
-              className="object-contain"
+              width={100}
+              height={100}
+              className="object-contain w-20 md:w-[140px]"
               priority
             />
-            <div>
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
-              <p className="text-lg md:text-xl text-gray-500 mt-2">L'encyclopédie libre sur la Grande Mosquée de Paris</p>
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-primary">Musulmans Français</h1>
+              <p className="text-base md:text-xl text-gray-500 mt-2">L'encyclopédie libre sur la Grande Mosquée de Paris</p>
             </div>
             <Image
               src="/logofrance.png"
               alt="France"
-              width={100}
-              height={100}
-              className="object-contain"
+              width={80}
+              height={80}
+              className="object-contain w-16 md:w-[100px]"
               priority
             />
           </div>
