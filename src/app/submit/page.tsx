@@ -67,7 +67,7 @@ export default function SubmitArticlePage() {
 
   const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
   const charCount = getCharCount(content)
-  const BURIAL_CHAR_LIMIT = 140
+  const BURIAL_CHAR_LIMIT = 500
   const isBurialOverLimit = articleType === 'burial' && charCount > BURIAL_CHAR_LIMIT
 
   const addInfoboxSection = () => {
@@ -559,7 +559,7 @@ export default function SubmitArticlePage() {
             {/* Content */}
             <div>
               <label className="block text-sm font-bold mb-2">
-                Contenu de l'article <span className="text-red-500">*</span>
+                {articleType === 'burial' ? 'Douaâ' : "Contenu de l'article"} <span className="text-red-500">*</span>
                 {articleType === 'burial' && (
                   <span className={`ml-2 text-xs font-normal ${isBurialOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
                     ({charCount}/{BURIAL_CHAR_LIMIT} caractères)
@@ -573,7 +573,7 @@ export default function SubmitArticlePage() {
                 placeholder="Commencez à écrire votre article ici..."
               />
               {isBurialOverLimit && (
-                <p className="text-red-500 text-xs mt-1">Le contenu ne doit pas dépasser {BURIAL_CHAR_LIMIT} caractères.</p>
+                <p className="text-red-500 text-xs mt-1">La Douaâ ne doit pas dépasser {BURIAL_CHAR_LIMIT} caractères.</p>
               )}
             </div>
 

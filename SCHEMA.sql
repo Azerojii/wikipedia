@@ -137,3 +137,18 @@ CREATE INDEX IF NOT EXISTS wiki_articles_search_idx ON wiki_articles USING GIN(s
 
 ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS "references" jsonb;
 ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS "references" jsonb;
+
+-- ─── Feature: Site settings (footer links, etc.) ─────────────────────────────
+
+CREATE TABLE IF NOT EXISTS wiki_settings (
+  key        text PRIMARY KEY,
+  value      jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE wiki_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "service role full access on wiki_settings"
+  ON wiki_settings FOR ALL
+  USING (true)
+  WITH CHECK (true);
