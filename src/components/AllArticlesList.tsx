@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { WikiArticle } from '@/lib/wiki'
 
 interface AllArticlesListProps {
   articles: WikiArticle[]
 }
 
-const INITIAL_DISPLAY = 10
+const PAGE_SIZE = 9
 
 function getArticleImage(article: WikiArticle): string | null {
   if (article.image_url) return article.image_url
@@ -21,8 +21,10 @@ function getArticleImage(article: WikiArticle): string | null {
 }
 
 export default function AllArticlesList({ articles }: AllArticlesListProps) {
-  const [showAll, setShowAll] = useState(false)
-  const displayedArticles = showAll ? articles : articles.slice(0, INITIAL_DISPLAY)
+  const [page, setPage] = useState(1)
+  const totalPages = Math.max(1, Math.ceil(articles.length / PAGE_SIZE))
+  const startIndex = (page - 1) * PAGE_SIZE
+  const displayedArticles = articles.slice(startIndex, startIndex + PAGE_SIZE)
 
   if (articles.length === 0) {
     return null
@@ -31,14 +33,16 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-serif font-bold mb-4">Tous les articles</h2>
-      <div className="space-y-3">
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {displayedArticles.map((article) => {
           const imageUrl = getArticleImage(article)
+
           return (
             <Link
               key={article.slug}
               href={`/wiki/${article.slug}`}
-              className="group block p-4 bg-white border border-gray-200 rounded-xl hover:border-primary/30 hover:shadow-md transition-all duration-200"
+              className="group block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/30 hover:shadow-md transition-all duration-200"
             >
               <div className="flex items-start gap-3">
                 {imageUrl && (
@@ -48,64 +52,77 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                     alt={article.title}
                     loading="lazy"
                     referrerPolicy="no-referrer"
-                    className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-100"
+                    className="h-14 w-14 rounded-xl object-cover flex-shrink-0 border-2 border-gray-100"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />
                 )}
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-base font-bold text-primary group-hover:text-primary/80 transition-colors">
                       {article.title}
                     </h3>
+
                     {article.article_type === 'mosque' && (
-                      <span className="px-2 py-0.5 bg-teal-50 text-teal-700 text-xs font-medium rounded-full">
-                        🕌 Mosquée
+                      <span className="rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+                        Mosquee
                       </span>
                     )}
+
                     {article.article_type === 'imam' && (
-                      <span className="px-2 py-0.5 bg-purple-50 text-purple-700 text-xs font-medium rounded-full">
-                        👤 Imam
+                      <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
+                        Imam
                       </span>
                     )}
+
                     {article.article_type === 'burial' && (
-                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                        🪦 Mort Musulman
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        Mort musulman
                       </span>
                     )}
+
                     {article.categories?.[0] && (
-                      <span className="text-xs text-gray-400 hidden sm:inline">
+                      <span className="hidden text-xs text-gray-400 sm:inline">
                         {article.categories[0]}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{article.excerpt}</p>
+
+                  <p className="mt-1 text-sm text-gray-500 line-clamp-3">{article.excerpt}</p>
                 </div>
               </div>
             </Link>
           )
         })}
+      </div>
 
-        {articles.length > INITIAL_DISPLAY && (
-          <div className="mt-4 text-center">
+      {totalPages > 1 && (
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <p className="text-sm text-gray-500">
+            Page {page} sur {totalPages}
+          </p>
+
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowAll(!showAll)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm rounded-lg hover:opacity-90 transition-all shadow-sm"
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              disabled={page === 1}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {showAll ? (
-                <>
-                  <ChevronUp size={18} />
-                  Voir moins
-                </>
-              ) : (
-                <>
-                  <ChevronDown size={18} />
-                  Voir plus ({articles.length - INITIAL_DISPLAY} articles restants)
-                </>
-              )}
+              <ChevronLeft size={16} />
+              Precedent
+            </button>
+
+            <button
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              disabled={page === totalPages}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Suivant
+              <ChevronRight size={16} />
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

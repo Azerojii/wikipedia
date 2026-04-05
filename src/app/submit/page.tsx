@@ -16,12 +16,20 @@ import ImamForm from '@/components/ImamForm'
 import BurialForm from '@/components/BurialForm'
 import type { MosqueData, ImamData, BurialData } from '@/types/mosque'
 
+const CUSTOM_CATEGORY_VALUE = '__custom__'
+const BURIAL_DEFAULT_CONTENT = [
+  "<p>Allahumma ighfir lahu warhamhu, wa 'afihi wa'fu 'anhu.</p>",
+  "<p>Allahumma akrim nuzulahu, wassi' mudkhalahu, waghsilhu bil-ma'i wath-thalji wal-barad.</p>",
+  "<p>Allahumma naqqihi mina al-khataya kama naqqayta ath-thawba al-abyada mina ad-danas.</p>",
+].join('')
+
 export default function SubmitArticlePage() {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Histoire')
   const [categories, setCategories] = useState<string[]>(['Histoire'])
+  const [customCategory, setCustomCategory] = useState('')
   const [content, setContent] = useState('')
   const [submitterName, setSubmitterName] = useState('')
   const [submitterEmail, setSubmitterEmail] = useState('')
@@ -47,6 +55,12 @@ export default function SubmitArticlePage() {
     fetchCategories()
   }, [])
 
+  useEffect(() => {
+    if (category === 'Morts Musulmans' && (!content || content === '<p><br></p>')) {
+      setContent(BURIAL_DEFAULT_CONTENT)
+    }
+  }, [category, content])
+
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories')
@@ -66,6 +80,7 @@ export default function SubmitArticlePage() {
   }
 
   const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
+  const selectedCategory = category === CUSTOM_CATEGORY_VALUE ? customCategory.trim() : category
   const charCount = getCharCount(content)
   const BURIAL_CHAR_LIMIT = 500
   const isBurialOverLimit = articleType === 'burial' && charCount > BURIAL_CHAR_LIMIT
@@ -171,7 +186,7 @@ export default function SubmitArticlePage() {
         body: JSON.stringify({
           title,
           excerpt: description,
-          categories: [category],
+          categories: selectedCategory ? [selectedCategory] : [],
           content,
           article_type: articleType,
           infobox: articleType === 'article' ? infoboxData : undefined,
@@ -334,7 +349,20 @@ export default function SubmitArticlePage() {
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
+                <option value={CUSTOM_CATEGORY_VALUE}>Creer une nouvelle categorie</option>
               </select>
+              {category === CUSTOM_CATEGORY_VALUE && (
+                <input
+                  type="text"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  className="mt-3 w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Nom de la nouvelle categorie"
+                />
+              )}
+              <p className="mt-2 text-xs text-gray-500">
+                Si vous proposez une nouvelle categorie, elle sera creee uniquement apres validation par un administrateur.
+              </p>
             </div>
 
             {/* Mosque Form */}
@@ -581,7 +609,7 @@ export default function SubmitArticlePage() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !title || isQuillEmpty(content) || !submitterName || !submitterEmail || isBurialOverLimit}
+                disabled={isSubmitting || !title || !selectedCategory || isQuillEmpty(content) || !submitterName || !submitterEmail || isBurialOverLimit}
                 className="px-6 py-2.5 bg-primary text-white rounded-lg hover:opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm shadow-sm transition-all"
               >
                 {isSubmitting ? (
