@@ -45,7 +45,7 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
               className="group block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/30 hover:shadow-md transition-all duration-200"
             >
               <div className="flex items-start gap-3">
-                {imageUrl && (
+                {imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={imageUrl}
@@ -55,7 +55,17 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                     className="h-14 w-14 rounded-xl object-cover flex-shrink-0 border-2 border-gray-100"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />
-                )}
+                ) : article.article_type === 'mosque' ? (
+                  <div className="h-14 w-14 rounded-xl flex-shrink-0 flex items-center justify-center border-2 border-teal-100 bg-teal-50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/mosquee.png" alt="" className="w-10 h-10 object-contain" />
+                  </div>
+                ) : article.article_type === 'imam' ? (
+                  <div className="h-14 w-14 rounded-xl flex-shrink-0 flex items-center justify-center bg-blue-500">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/muslimah_white.png" alt="" className="w-10 h-10 object-contain" />
+                  </div>
+                ) : null}
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -64,13 +74,17 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
                     </h3>
 
                     {article.article_type === 'mosque' && (
-                      <span className="rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
-                        Mosquee
+                      <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/mosquee.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                        Mosquée
                       </span>
                     )}
 
                     {article.article_type === 'imam' && (
-                      <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/muslimah_white.png" alt="" className="w-3.5 h-3.5 object-contain" />
                         Imam
                       </span>
                     )}

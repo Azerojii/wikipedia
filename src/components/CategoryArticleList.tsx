@@ -31,15 +31,17 @@ function getArticleImage(article: WikiArticle): string | null {
 function TypeBadge({ type }: { type: string }) {
   if (type === 'mosque') {
     return (
-      <span className="px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full whitespace-nowrap">
-        🕌 Mosquée
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full whitespace-nowrap">
+        <img src="/mosquee.png" alt="" className="w-3.5 h-3.5 object-contain" />
+        Mosquée
       </span>
     )
   }
   if (type === 'imam') {
     return (
-      <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full whitespace-nowrap">
-        👤 Imam
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+        <img src="/muslimah_white.png" alt="" className="w-3.5 h-3.5 object-contain" />
+        Imam
       </span>
     )
   }
@@ -101,7 +103,7 @@ export default function CategoryArticleList({ articles }: CategoryArticleListPro
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 flex-1">
-                    {imageUrl && (
+                    {imageUrl ? (
                       <img
                         src={imageUrl}
                         alt={article.title}
@@ -110,7 +112,15 @@ export default function CategoryArticleList({ articles }: CategoryArticleListPro
                         className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-100"
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                       />
-                    )}
+                    ) : article.article_type === 'mosque' ? (
+                      <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-teal-100 bg-teal-50">
+                        <img src="/mosquee.png" alt="" className="w-8 h-8 object-contain" />
+                      </div>
+                    ) : article.article_type === 'imam' ? (
+                      <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center bg-blue-500">
+                        <img src="/muslimah_white.png" alt="" className="w-8 h-8 object-contain" />
+                      </div>
+                    ) : null}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <h3 className="text-lg font-bold text-primary group-hover:text-primary/80 transition-colors">{article.title}</h3>
