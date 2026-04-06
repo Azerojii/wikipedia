@@ -9,7 +9,7 @@ interface AllArticlesListProps {
   articles: WikiArticle[]
 }
 
-const PAGE_SIZE = 9
+const PAGE_SIZE = 10
 
 function getArticleImage(article: WikiArticle): string | null {
   if (article.image_url) return article.image_url
@@ -111,30 +111,54 @@ export default function AllArticlesList({ articles }: AllArticlesListProps) {
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-          <p className="text-sm text-gray-500">
-            Page {page} sur {totalPages}
-          </p>
+        <div className="mt-6 flex items-center justify-center gap-1">
+          <button
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={page === 1}
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ChevronLeft size={16} />
+            Précédent
+          </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
-              disabled={page === 1}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ChevronLeft size={16} />
-              Precedent
-            </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((p) => {
+              if (totalPages <= 5) return true
+              if (p === 1 || p === totalPages) return true
+              if (Math.abs(p - page) <= 1) return true
+              return false
+            })
+            .reduce<(number | '…')[]>((acc, p, idx, arr) => {
+              if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('…')
+              acc.push(p)
+              return acc
+            }, [])
+            .map((p, idx) =>
+              p === '…' ? (
+                <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-gray-400">…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p as number)}
+                  className={`min-w-[36px] rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    page === p
+                      ? 'bg-primary text-white'
+                      : 'border border-gray-200 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            )}
 
-            <button
-              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-              disabled={page === totalPages}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Suivant
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <button
+            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+            disabled={page === totalPages}
+            className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Suivant
+            <ChevronRight size={16} />
+          </button>
         </div>
       )}
     </div>
