@@ -186,6 +186,35 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
         </>
       )}
 
+      {/* Association */}
+      {(mosque.associationName || (mosque.associationMembers && mosque.associationMembers.length > 0)) && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Association actuelle
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.associationName && (
+                <tr className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top text-gray-700 font-medium" style={{ width: '45%' }}>Nom</td>
+                  <td className="py-1.5 px-3 align-top font-medium">{mosque.associationName}</td>
+                </tr>
+              )}
+              {mosque.associationMembers && mosque.associationMembers.map((member, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top" colSpan={2}>
+                    <div className="font-medium">{member.lastName} {member.firstName}</div>
+                    {member.role && (
+                      <div className="text-xs text-gray-500">{member.role}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
       {/* Current Imam */}
       {mosque.currentImam && (
         <>
