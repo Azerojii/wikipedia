@@ -160,11 +160,11 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
         </>
       )}
 
-      {/* Current Committee */}
+      {/* Current Association */}
       {mosque.currentCommittee && mosque.currentCommittee.length > 0 && (
         <>
           <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
-            Membres actuels du comité
+            Association actuelle
           </div>
           <table className="w-full border-collapse">
             <tbody>
@@ -219,6 +219,36 @@ export default function MosqueInfobox({ mosque }: MosqueInfoboxProps) {
                         {imam.from && `De ${imam.from}`}
                         {imam.from && imam.to && ' — '}
                         {imam.to && `À ${imam.to}`}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Workers */}
+      {mosque.workers && mosque.workers.length > 0 && (
+        <>
+          <div className="bg-[#eaecf0] text-gray-800 font-semibold px-3 py-1.5 text-center">
+            Travailleurs
+          </div>
+          <table className="w-full border-collapse">
+            <tbody>
+              {mosque.workers.map((worker, idx) => (
+                <tr key={idx} className="border-t border-[#a2a9b1]">
+                  <td className="py-1.5 px-3 align-top">
+                    <div className="font-medium">{worker.name}</div>
+                    {worker.rank && (
+                      <div className="text-xs text-gray-500">{worker.rank}</div>
+                    )}
+                    {(worker.from || worker.to) && (
+                      <div className="text-xs text-[#0645ad]">
+                        {worker.from && `De ${worker.from}`}
+                        {worker.from && worker.to && ' — '}
+                        {worker.to && `À ${worker.to}`}
                       </div>
                     )}
                   </td>

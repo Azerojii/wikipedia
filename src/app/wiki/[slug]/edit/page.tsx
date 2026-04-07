@@ -49,7 +49,7 @@ export default function EditArticlePage() {
     return html.replace(/<(.|\n)*?>/g, '').trim().length
   }
   const charCount = getCharCount(content)
-  const BURIAL_CHAR_LIMIT = 140
+  const BURIAL_CHAR_LIMIT = 250
   const isBurialOverLimit = articleType === 'burial' && charCount > BURIAL_CHAR_LIMIT
 
   useEffect(() => {

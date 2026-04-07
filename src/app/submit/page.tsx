@@ -82,7 +82,7 @@ export default function SubmitArticlePage() {
   const articleType = category === 'Mosquées' ? 'mosque' : category === 'Imams' ? 'imam' : category === 'Morts Musulmans' ? 'burial' : 'article'
   const selectedCategory = category === CUSTOM_CATEGORY_VALUE ? customCategory.trim() : category
   const charCount = getCharCount(content)
-  const BURIAL_CHAR_LIMIT = 500
+  const BURIAL_CHAR_LIMIT = 250
   const isBurialOverLimit = articleType === 'burial' && charCount > BURIAL_CHAR_LIMIT
 
   const addInfoboxSection = () => {
