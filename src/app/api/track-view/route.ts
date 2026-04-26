@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
-import { headers } from 'next/server'
+import { headers } from 'next/headers'
 
 const COUNTRY_NAMES: Record<string, string> = {
   DZ: 'Algérie',
