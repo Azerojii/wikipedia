@@ -3,8 +3,9 @@ import Image from 'next/image'
 import WikiHeader from '@/components/WikiHeader'
 import AllArticlesList from '@/components/AllArticlesList'
 import WikiFooter from '@/components/WikiFooter'
-import { Plus } from 'lucide-react'
-import { getAllArticles, getAllCategories } from '@/lib/wiki'
+import FlagCounter from '@/components/FlagCounter'
+import { Plus, Eye } from 'lucide-react'
+import { getAllArticles, getAllCategories, getMostViewedArticles } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -17,7 +18,11 @@ function isNewArticle(date: string): boolean {
 }
 
 export default async function Home() {
-  const [articles, categories] = await Promise.all([getAllArticles(), getAllCategories()])
+  const [articles, categories, mostViewed] = await Promise.all([
+    getAllArticles(),
+    getAllCategories(),
+    getMostViewedArticles(6),
+  ])
 
   const categoryData = categories.map(cat => {
     const categoryArticles = articles.filter(a => a.categories?.includes(cat.name))
@@ -99,6 +104,47 @@ export default async function Home() {
         </div>
 
         <AllArticlesList articles={articles} />
+
+        {/* Most Viewed Articles */}
+        {mostViewed.length > 0 && (
+          <section className="mt-12 mb-10">
+            <h2 className="text-2xl font-serif font-bold mb-4 flex items-center gap-2">
+              <Eye size={22} />
+              Articles les plus consultés
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mostViewed.map(article => (
+                <Link
+                  key={article.slug}
+                  href={`/wiki/${encodeURIComponent(article.slug)}`}
+                  className="group p-4 bg-white border border-gray-200 rounded-lg hover:border-primary/30 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    {article.image_url && (
+                      <img
+                        src={article.image_url}
+                        alt={article.title}
+                        className="w-12 h-12 rounded object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-bold text-primary group-hover:text-primary/80 transition-colors line-clamp-2">{article.title}</h3>
+                      <div className="flex items-center gap-1 mt-1.5 text-xs text-primary font-semibold">
+                        <Eye size={12} />
+                        {article.viewCount.toLocaleString('fr-FR')} vues
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Visitor Stats by Country */}
+        <div className="mt-10">
+          <FlagCounter />
+        </div>
 
         <div className="mt-10 text-center text-sm text-gray-400">
           <p>Musulmans Français contient {articles.length} article{articles.length !== 1 ? 's' : ''} sur la Grande Mosquée de Paris</p>

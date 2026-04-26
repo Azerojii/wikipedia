@@ -152,3 +152,15 @@ CREATE POLICY "service role full access on wiki_settings"
   ON wiki_settings FOR ALL
   USING (true)
   WITH CHECK (true);
+
+-- ─── Feature: Article view tracking (per-article, per-country) ─────────────────
+
+CREATE TABLE IF NOT EXISTS wiki_article_view_counts (
+  slug         text NOT NULL,
+  country_code text NOT NULL DEFAULT 'XX',
+  country_name text NOT NULL DEFAULT 'Unknown',
+  view_count   bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (slug, country_code)
+);
+
+CREATE INDEX IF NOT EXISTS wiki_view_counts_slug_idx ON wiki_article_view_counts (slug);

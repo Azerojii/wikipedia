@@ -421,3 +421,100 @@ export async function updateSubmission(
   }
   return data as WikiSubmission
 }
+
+// ─── View Tracking ────────────────────────────────────────────────────────────
+
+export interface ViewCount {
+  countryCode: string
+  countryName: string
+  viewCount: number
+}
+
+export async function getMostViewedArticles(limit: number = 6): Promise<(WikiArticle & { viewCount: number })[]> {
+  try {
+    // Get top articles by view count
+    const { data: viewData, error: viewError } = await supabase
+      .from('wiki_article_view_counts')
+      .select('slug')
+      .order('view_count', { ascending: false })
+      .limit(limit)
+
+    if (viewError || !viewData) return []
+
+    // Fetch full article data for each slug
+    const articles = await Promise.all(
+      viewData.map(async (vc) => {
+        const article = await getArticle(vc.slug)
+        return article
+      })
+    )
+
+    // Get view counts for all slugs
+    const slugs = viewData.map((vc) => vc.slug)
+    const viewCounts = await getViewCountsBySlugs(slugs)
+
+    return articles
+      .filter((a) => a !== null)
+      .map((a) => ({
+        ...(a as WikiArticle),
+        viewCount: viewCounts[a!.slug] || 0,
+      }))
+  } catch (error) {
+    console.error('Error fetching most viewed articles:', error)
+    return []
+  }
+}
+
+export async function getViewCountsBySlugs(slugs: string[]): Promise<Record<string, number>> {
+  if (slugs.length === 0) return {}
+
+  try {
+    const { data, error } = await supabase
+      .from('wiki_article_view_counts')
+      .select('slug, view_count')
+      .in('slug', slugs)
+
+    if (error || !data) return {}
+
+    return data.reduce(
+      (acc, vc) => {
+        acc[vc.slug] = (acc[vc.slug] || 0) + vc.view_count
+      },
+      {} as Record<string, number>
+    )
+  } catch (error) {
+    console.error('Error fetching view counts:', error)
+    return {}
+  }
+}
+
+export async function getGlobalViewsByCountry(): Promise<ViewCount[]> {
+  try {
+    const { data, error } = await supabase
+      .from('wiki_article_view_counts')
+      .select('country_code, country_name, view_count')
+      .order('view_count', { ascending: false })
+
+    if (error || !data) return []
+
+    // Aggregate by country
+    const countryMap = new Map<string, { name: string; total: number }>()
+    data.forEach((row) => {
+      const existing = countryMap.get(row.country_code)
+      if (existing) {
+        existing.total += row.view_count
+      } else {
+        countryMap.set(row.country_code, { name: row.country_name, total: row.view_count })
+      }
+    })
+
+    return Array.from(countryMap.entries()).map(([code, { name, total }]) => ({
+      countryCode: code,
+      countryName: name,
+      viewCount: total,
+    }))
+  } catch (error) {
+    console.error('Error fetching global views by country:', error)
+    return []
+  }
+}

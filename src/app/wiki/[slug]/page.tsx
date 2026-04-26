@@ -14,6 +14,7 @@ import PrintButton from '@/components/PrintButton'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import ArticleReferences from '@/components/ArticleReferences'
 import YouTubeVideos from '@/components/YouTubeVideos'
+import ViewTracker from '@/components/ViewTracker'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -45,6 +46,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
       <WikiHeader />
+      <ViewTracker slug={slug} />
 
       <div className="flex max-w-[1400px] mx-auto">
         <WikiSidebar />
