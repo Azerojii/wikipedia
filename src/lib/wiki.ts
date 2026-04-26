@@ -86,6 +86,7 @@ export interface WikiEditSuggestion {
   suggested_title?: string | null
   suggested_excerpt?: string | null
   suggested_categories?: string[] | null
+  original_content?: string | null
   reason?: string | null
   suggester_name?: string | null
   status: string
@@ -373,6 +374,7 @@ export async function createEditSuggestion(data: {
   suggested_title?: string
   suggested_excerpt?: string
   suggested_categories?: string[]
+  original_content?: string
   reason?: string
   suggester_name?: string
 }): Promise<WikiEditSuggestion | null> {
@@ -479,6 +481,7 @@ export async function getViewCountsBySlugs(slugs: string[]): Promise<Record<stri
     return data.reduce(
       (acc, vc) => {
         acc[vc.slug] = (acc[vc.slug] || 0) + vc.view_count
+        return acc
       },
       {} as Record<string, number>
     )
@@ -497,7 +500,6 @@ export async function getGlobalViewsByCountry(): Promise<ViewCount[]> {
 
     if (error || !data) return []
 
-    // Aggregate by country
     const countryMap = new Map<string, { name: string; total: number }>()
     data.forEach((row) => {
       const existing = countryMap.get(row.country_code)
@@ -515,6 +517,53 @@ export async function getGlobalViewsByCountry(): Promise<ViewCount[]> {
     }))
   } catch (error) {
     console.error('Error fetching global views by country:', error)
+    return []
+  }
+}
+
+// ─── Wilaya Browsing ──────────────────────────────────────────────────────────
+
+export async function getArticlesByWilaya(wilayaName: string): Promise<WikiArticle[]> {
+  try {
+    // Wiki articles store localisation in mosque_data/imam_data JSON
+    // We search for it in the infobox sections or excerpt text
+    const { data, error } = await supabase
+      .from('wiki_articles')
+      .select('*')
+      .or(
+        `excerpt.ilike.%${wilayaName}%,` +
+        `content.ilike.%${wilayaName}%`
+      )
+      .order('updated_at', { ascending: false })
+
+    if (error || !data) return []
+    return data as WikiArticle[]
+  } catch (error) {
+    console.error('Error fetching articles by wilaya:', error)
+    return []
+  }
+}
+
+// ─── Suggested Articles ───────────────────────────────────────────────────────
+
+export async function getSuggestedArticles(
+  currentSlug: string,
+  articleType: string,
+  limit: number = 5
+): Promise<WikiArticle[]> {
+  try {
+    const { data, error } = await supabase
+      .from('wiki_articles')
+      .select('*')
+      .eq('article_type', articleType)
+      .neq('slug', currentSlug)
+      .order('updated_at', { ascending: false })
+      .limit(limit)
+
+    if (error || !data) return []
+    return data as WikiArticle[]
+  } catch (error) {
+    console.error('Error fetching suggested articles:', error)
     return []
   }
 }

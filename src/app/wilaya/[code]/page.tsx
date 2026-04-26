@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react'
 import ArticleListCard from '@/components/ArticleListCard'
 import PaginationControls from '@/components/PaginationControls'
 import WikiHeader from '@/components/WikiHeader'
+import WikiFooter from '@/components/WikiFooter'
 import { getArticlesByWilaya, getViewCountsBySlugs } from '@/lib/wiki'
 
 export const dynamic = 'force-dynamic'
@@ -11,9 +12,9 @@ const PAGE_SIZE = 10
 
 export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params
-  const wilayaName = decodeURIComponent(code)
+  const regionName = decodeURIComponent(code)
   return {
-    title: `${wilayaName} - موسوعة أئمة ومساجد الجزائر`,
+    title: `${regionName} - Musulmans Français`,
   }
 }
 
@@ -28,78 +29,81 @@ export default async function WilayaPage({
   const query = (await searchParams) || {}
   const pageValue = Number.parseInt(query.page || '1', 10)
 
-  const wilayaName = decodeURIComponent(code)
-  const articles = await getArticlesByWilaya(wilayaName)
-  const sortedArticles = [...articles].sort((a, b) => a.title.localeCompare(b.title, 'ar'))
-  const viewCounts = await getViewCountsBySlugs(sortedArticles.map(i => i.slug))
-  const enrichedArticles = sortedArticles.map(i => ({ ...i, viewCount: viewCounts[i.slug] || 0 }))
-  const totalPages = Math.max(1, Math.ceil(enrichedArticles.length / PAGE_SIZE))
+  const regionName = decodeURIComponent(code)
+  const articles = await getArticlesByWilaya(regionName)
+  const sortedArticles = [...articles].sort((a, b) => a.title.localeCompare(b.title, 'fr'))
+  const viewCounts = await getViewCountsBySlugs(sortedArticles.map(a => a.slug))
+
+  const totalPages = Math.max(1, Math.ceil(sortedArticles.length / PAGE_SIZE))
   const currentPage = Number.isFinite(pageValue)
     ? Math.min(Math.max(pageValue, 1), totalPages)
     : 1
 
   const startIndex = (currentPage - 1) * PAGE_SIZE
-  const paginatedArticles = enrichedArticles.slice(startIndex, startIndex + PAGE_SIZE)
+  const paginatedArticles = sortedArticles.slice(startIndex, startIndex + PAGE_SIZE)
 
   const stats = {
-    imam: articles.filter(a => a.articleType === 'imam').length,
-    mosque: articles.filter(a => a.articleType === 'mosque').length,
-    quranTeacher: articles.filter(a => a.articleType === 'quran_teacher').length,
-    mourshida: articles.filter(a => a.articleType === 'mourshida').length,
+    imam: articles.filter(a => a.article_type === 'imam').length,
+    mosque: articles.filter(a => a.article_type === 'mosque').length,
+    burial: articles.filter(a => a.article_type === 'burial').length,
+    article: articles.filter(a => a.article_type === 'article').length,
   }
 
   return (
-    <div className="min-h-screen bg-bg-main">
+    <div className="min-h-screen bg-[#f5f6f8]">
       <WikiHeader />
 
-      <div className="mx-auto max-w-[1500px]">
-        <main className="px-4 py-4 md:px-6">
-          <div className="text-sm text-text-secondary mb-4 flex items-center gap-2">
-            <Link href="/" className="text-primary hover:underline">الرئيسية</Link>
-            <span className="text-border">‹</span>
-            <span className="text-text-primary flex items-center gap-1">
-              <MapPin size={12} />
-              {wilayaName}
-            </span>
-          </div>
+      <div className="max-w-5xl mx-auto px-4 md:px-8 py-6">
+        <nav className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+          <Link href="/" className="text-primary hover:underline">Accueil</Link>
+          <span className="text-gray-300">›</span>
+          <span className="flex items-center gap-1 text-gray-700">
+            <MapPin size={14} />
+            {regionName}
+          </span>
+        </nav>
 
-          <h1 className="text-2xl md:text-4xl font-heading font-bold text-primary border-b-2 border-border-light pb-2 mb-2 flex items-center gap-3">
-            <MapPin size={32} className="text-accent" />
-            {wilayaName}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+          <h1 className="text-2xl md:text-3xl font-serif font-bold flex items-center gap-2 mb-2">
+            <MapPin size={28} className="text-primary" />
+            {regionName}
           </h1>
-
-          <p className="text-text-secondary mb-4">
-            {articles.length} مقال
-            {` (${stats.imam} إمام، ${stats.mosque} مسجد`}
-            {stats.quranTeacher > 0 ? `، ${stats.quranTeacher} معلم قرآن` : ''}
-            {stats.mourshida > 0 ? `، ${stats.mourshida} مرشدة دينية` : ''}
-            {')'}
+          <p className="text-sm text-gray-500">
+            {articles.length} article{articles.length !== 1 ? 's' : ''}
+            {stats.imam > 0 && ` · ${stats.imam} imam${stats.imam !== 1 ? 's' : ''}`}
+            {stats.mosque > 0 && ` · ${stats.mosque} mosquée${stats.mosque !== 1 ? 's' : ''}`}
+            {stats.burial > 0 && ` · ${stats.burial} défunt${stats.burial !== 1 ? 's' : ''}`}
           </p>
+        </div>
 
-          {articles.length === 0 ? (
-            <div className="text-center py-16 text-text-secondary">
-              <MapPin size={48} className="mx-auto mb-4 opacity-30" />
-              <p className="text-lg">لا توجد مقالات لهذه الولاية بعد.</p>
+        {articles.length === 0 ? (
+          <div className="text-center py-16 text-gray-500 bg-white rounded-xl border border-gray-200">
+            <MapPin size={48} className="mx-auto mb-4 opacity-30" />
+            <p className="text-lg">Aucun article pour cette région.</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-xs text-gray-400 mb-3">
+              {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, sortedArticles.length)} sur {sortedArticles.length}
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {paginatedArticles.map(article => (
+                <ArticleListCard
+                  key={article.slug}
+                  article={article}
+                  viewCount={viewCounts[article.slug]}
+                />
+              ))}
             </div>
-          ) : (
-            <>
-              <div className="mb-4 text-xs text-text-secondary">
-                عرض {startIndex + 1} - {Math.min(startIndex + PAGE_SIZE, enrichedArticles.length)} من {enrichedArticles.length}
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {paginatedArticles.map(article => (
-                  <ArticleListCard key={article.slug} article={article} />
-                ))}
-              </div>
-              <PaginationControls
-                basePath={`/wilaya/${encodeURIComponent(wilayaName)}`}
-                currentPage={currentPage}
-                totalPages={totalPages}
-              />
-            </>
-          )}
-        </main>
+            <PaginationControls
+              basePath={`/wilaya/${encodeURIComponent(regionName)}`}
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
+          </>
+        )}
       </div>
+      <WikiFooter />
     </div>
   )
 }

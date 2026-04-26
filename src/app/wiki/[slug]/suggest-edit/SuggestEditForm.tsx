@@ -60,6 +60,7 @@ export default function SuggestEditForm({
             JSON.stringify(suggestedCategories) !== JSON.stringify(currentCategories)
               ? suggestedCategories
               : undefined,
+          original_content: currentContent || undefined,
           reason: reason || undefined,
           suggester_name: suggesterName || undefined,
         }),

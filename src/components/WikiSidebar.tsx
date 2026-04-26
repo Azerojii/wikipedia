@@ -43,6 +43,11 @@ export default function WikiSidebar() {
                 Soumettre un article
               </Link>
             </li>
+            <li>
+              <Link href="/contact" className="text-gray-700 hover:text-primary hover:bg-white rounded-lg px-2.5 py-1.5 -mx-1 block transition-all">
+                Nous contacter
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

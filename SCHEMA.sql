@@ -164,3 +164,16 @@ CREATE TABLE IF NOT EXISTS wiki_article_view_counts (
 );
 
 CREATE INDEX IF NOT EXISTS wiki_view_counts_slug_idx ON wiki_article_view_counts (slug);
+
+-- ─── Feature: Original content snapshot on edit suggestions ───────────────────
+
+ALTER TABLE wiki_edit_suggestions ADD COLUMN IF NOT EXISTS original_content text;
+
+-- ─── Feature: Bank information for mosque articles ────────────────────────────
+
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS bank_account_name text;
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS bank_account_number text;
+ALTER TABLE wiki_articles    ADD COLUMN IF NOT EXISTS bank_name text;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS bank_account_name text;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS bank_account_number text;
+ALTER TABLE wiki_submissions ADD COLUMN IF NOT EXISTS bank_name text;

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getArticle, generateTableOfContents } from '@/lib/wiki'
+import { getArticle, generateTableOfContents, parseWikiLinks } from '@/lib/wiki'
 import WikiHeader from '@/components/WikiHeader'
 import WikiFooter from '@/components/WikiFooter'
 import WikiSidebar from '@/components/WikiSidebar'
@@ -15,6 +15,8 @@ import MarkdownRenderer from '@/components/MarkdownRenderer'
 import ArticleReferences from '@/components/ArticleReferences'
 import YouTubeVideos from '@/components/YouTubeVideos'
 import ViewTracker from '@/components/ViewTracker'
+import SuggestedArticles from '@/components/SuggestedArticles'
+import MosqueGalleryLightbox from '@/components/MosqueGalleryLightbox'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -41,7 +43,8 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
     notFound()
   }
 
-  const toc = generateTableOfContents(article.content)
+  const parsedContent = parseWikiLinks(article.content || '')
+  const toc = generateTableOfContents(parsedContent)
 
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
@@ -81,7 +84,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
 
             <div className="flex flex-col-reverse lg:flex-row gap-8">
               <div className="flex-1 min-w-0">
-                <ArticleReferences content={article.content} references={article.references} />
+                <ArticleReferences content={parsedContent} references={article.references} />
 
                 {/* Article metadata */}
                 <div className="mt-12 pt-5 border-t border-gray-200">
@@ -124,7 +127,13 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
                     sections={article.infobox.sections}
                   />
                 ) : null}
+                {/* Mosque photo gallery */}
+                {article.article_type === 'mosque' && article.mosque_data?.gallery && article.mosque_data.gallery.length > 0 && (
+                  <MosqueGalleryLightbox images={article.mosque_data.gallery} />
+                )}
                 {toc.length > 0 && <TableOfContents items={toc} />}
+                {/* Suggested similar articles */}
+                <SuggestedArticles currentSlug={slug} articleType={article.article_type} />
               </aside>
             </div>
           </div>
